@@ -16,12 +16,17 @@ module.exports = function(lib) {
                 getConduits();
                 return;
             // Create Conduits - https://dev.twitch.tv/docs/api/reference/#create-conduits
-
+            case 'createConduits':
+                createConduits(details);
+                return;
             // Update Conduits - https://dev.twitch.tv/docs/api/reference/#update-conduits
             case 'updateConduits':
                 updateConduits(details);
                 return;
             // Delete Conduits - https://dev.twitch.tv/docs/api/reference/#delete-conduit
+            case 'deleteConduits':
+                deleteConduits(details);
+                return;
             // Get Conduit Shards - https://dev.twitch.tv/docs/api/reference/#get-conduit-shards
             case 'getConduitShards':
                 getConduitShards(details);
@@ -52,7 +57,13 @@ module.exports = function(lib) {
                 ...options
             }
         );
-        let resp = await req.json();
+
+        let resp = {};
+        if (req.status == 204) {
+            // there is no json
+        } else {
+            resp = await req.json();
+        }
 
         console.log(req.status, resp.data);
         //console.log(resp.data[1]);
@@ -75,6 +86,29 @@ module.exports = function(lib) {
             url,
             {
                 method: 'GET'
+            }
+        );
+    }
+
+    async function createConduits(details) {
+        let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
+        callTwitch(
+            'createConduits',
+            url,
+            {
+                method: 'POST',
+                body: JSON.stringify(details)
+            }
+        );
+    }
+    async function deleteConduits(details) {
+        let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
+        callTwitch(
+            'deleteConduits',
+            url,
+            {
+                method: 'DELETE',
+                body: JSON.stringify(details)
             }
         );
     }

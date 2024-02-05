@@ -158,6 +158,11 @@ window.electron.twitchAPIResult((data) => {
                 drawConduits(data.data);
                 break;
 
+            case 'createConduits':
+                // reload conduits
+                //window.electron.twitchAPI('getConduits');
+                //break;
+            case 'deleteConduits':
             case 'updateConduits':
                 // call full reload
                 window.electron.twitchAPI('getConduits');
@@ -207,10 +212,18 @@ function drawConduits(conduits) {
         // add button for edit shard count
         let btn = document.createElement('div');
         btn.classList.add('btn');
-        btn.classList.add('btn-outline-danger');
+        btn.classList.add('btn-outline-warning');
         btn.textContent = 'Update Count';
         igroup.append(btn);
         btn.addEventListener('click', updateConduits);
+        // add button for delete conduit
+        let xBtn = document.createElement('div');
+        xBtn.classList.add('btn');
+        xBtn.classList.add('btn-outline-danger');
+        //xBtn.textContent = 'Update Count';
+        xBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>';
+        igroup.append(xBtn);
+        xBtn.addEventListener('click', deleteConduits);
 
         let rightCell = r.insertCell();
         let getShards = document.createElement('div');
@@ -227,17 +240,53 @@ function drawConduits(conduits) {
         tdid.textContent = 'Empty';
         let rightCell = r.insertCell();
         // add create button
+
+        let igroup = document.createElement('div');
+        rightCell.append(igroup);
+        igroup.classList.add('input-group');
+
+        let inp = document.createElement('input');
+        inp.classList.add('form-control');
+        inp.setAttribute('id', `${x}_shardcount`);
+        inp.setAttribute('name', 'shardcount');
+        inp.setAttribute('type', 'number');
+        inp.setAttribute('min', 1);
+        inp.setAttribute('max', 20000);
+        inp.value = '1';
+        igroup.append(inp);
+
         let btn = document.createElement('div');
         btn.classList.add('btn');
         btn.classList.add('btn-outline-primary');
         btn.textContent = 'Create';
-        rightCell.append(btn);
+        btn.addEventListener('click', createConduits);
+        igroup.append(btn);
     }
+}
+
+function createConduits(e) {
+    let r = e.target.closest('tr');
+
+    window.electron.twitchAPI(
+        'createConduits',
+        {
+            shard_count: parseInt(r.querySelector('input[name="shardcount"]').value)
+        }
+    );
+}
+function deleteConduits(e) {
+    let r = e.target.closest('tr');
+
+    window.electron.twitchAPI(
+        'deleteConduits',
+        {
+            id: r.getAttribute('id')
+        }
+    );
 }
 
 function updateConduits(e) {
     let r = e.target.closest('tr');
-    console.log(r);
 
     window.electron.twitchAPI(
         'updateConduits',

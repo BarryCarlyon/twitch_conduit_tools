@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <title>BarryCarlyon Twitch Extension Tools</title>
+    <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand fixed-top navbar-dark bg-dark" aria-label="Main navigation">
+        <div class="container-fluid fs-5">
+            <div class="navbar-collapse" id="navbarsExampleDefault">
+                <ul class="nav navbar-nav me-auto mb-2 mb-lg-0" >
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" href="#" role="tab" aria-controls="config" aria-selected="true">Keys</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link disabled" id="run-tab" data-bs-toggle="tab" data-bs-target="#run" href="#" role="tab" aria-controls="run" aria-selected="false">Requests</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="select_active_extension" href="#" role="button" aria-expanded="false">Select Active KeySet</a>
+                        <ul class="dropdown-menu" aria-labelledby="select_active_extension" id="extension_select"></ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container-fluid">
+        <div class="tab-content">
+            <div class="tab-pane p-3 show active" id="config" role="tabpanel" aria-labelledby="config-tab">
+                <div class="btn-group float-end">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#add_new_configuration_modal">Add New Configuration</button>
+                    <a href="https://dev.twitch.tv/console/apps" class="btn btn-outline-primary">Dev Console</a>
+                </div>
+                <h3>Configuration</h3>
+
+                <table id="existing_extensions" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ClientID</th>
+                            <th>DevConsole Links/Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="bg-dark rounded p-3">
+                    <p>Use "Revoke" to revoke a generated App Access Token if we have one on file</p>
+                    <div class="help-text">
+                        Client configurations (Client Secrets and generated App Access Tokens) are stored locally unencrypted in the following file <kbd id="config_location"></kbd>
+                    </div>
+                </div>
+            </div>
+
+<!--
+                                        <div class="input-group p-1">
+                                            <label class="input-group-text" for="client_id">client_id</label>
+                                            <input type="text" name="client_id" id="client_id" class="form-control active_client_id" />
+                                        </div>
+-->
+
+
+            <div class="tab-pane p-3" id="run" role="tabpanel" aria-labelledby="run-tab">
+                <div class="accordion" id="run_accordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="func_get_conduits_header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#func_get_conduits" aria-expanded="false" aria-controls="func_get_conduits_header">Conduits</button>
+                        </h2>
+                        <div id="func_get_conduits" class="accordion-collapse collapse collapse" aria-labelledby="func_get_conduits_header" data-bs-parent="#run_accordion">
+                            <div class="accordion-body">
+                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#get-conduits">Get Conduits</a></p>
+                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</a></p>
+
+                                <form action="" method="post" id="func_get_conduits_form">
+                                    <fieldset>
+                                        <table id="getConduitsDisplay" class="table table-striped"></table>
+
+                                        <div class="btn-group p-1 float-end">
+                                            <input type="button" class="btn btn-outline-danger" id="func_get_conduits_go" value="Get Conduits" />
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="func_get_conduit_shards_header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#func_get_conduit_shards" aria-expanded="false" aria-controls="func_get_conduit_shards_header">Conduit Shards</button>
+                        </h2>
+                        <div id="func_get_conduit_shards" class="accordion-collapse collapse collapse" aria-labelledby="func_get_conduit_shards_header" data-bs-parent="#run_accordion">
+                            <div class="accordion-body">
+                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#get-conduit-shards">Get Conduit Shards</a></p>
+                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#update-conduit-shards">Update Conduit Shards</a></p>
+
+                                <form action="" method="post" id="func_get_conduit_shards_form">
+                                    <fieldset>
+                                        <div id="getConduitShardsDisplayHeader"></div>
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ShardID</th>
+                                                    <th>State</th>
+                                                    <th>Type</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="getConduitShardsDisplay"></tbody>
+                                            <tfoot>
+                                                <tr><td>todo refresh button</td></tr>
+                                            </tfoot>
+                                        </table>
+                                    </fieldset>
+                                </form>
+
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="add_new_configuration_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Extension Configuration</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" id="config_form">
+                            <fieldset>
+                                <div class="help-text">If the ClientID already exists in the local configuration, the configuration will be overwritten</div>
+
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="name">Name</label>
+                                    <input type="text" name="name" id="name" value="" class="form-control" />
+                                </div>
+                                <div class="help-text">Can use your own name doesn't need to be the real name</div>
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="client_id">Extension Client ID</label>
+                                    <input type="text" name="client_id" id="client_id" value="" class="form-control" />
+                                </div>
+
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="client_secret">Twitch API Client Secret</label>
+                                    <input type="password" name="client_secret" id="client_secret" value="" class="form-control" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="https://dev.twitch.tv/console/apps" class="btn btn-outline-primary">Dev Console</a>
+
+                        <input type="submit" class="btn btn-primary" id="create_button" value="Create Configuration" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="rusure_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Are you sure you wish to remove:</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" id="remove_configuration">
+                            <fieldset>
+                                <legend id="remove_name"></legend>
+
+                                <div class="btn-group d-flex">
+                                    <input type="button" value="Remove" class="btn btn-outline-danger" data-bs-dismiss="modal" id="actuallyRemove" />
+                                    <input type="button" value="KeepIt" class="btn btn-outline-primary" data-bs-dismiss="modal" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="EditConduitShard_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Update Shard</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" id="shard_form">
+                            <fieldset>
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="editshard_conduit_id">ConduitID</label>
+                                    <input type="text" name="editshard_conduit_id" id="editshard_conduit_id" value="" class="form-control" readonly="readonly" />
+                                </div>
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="editshard_shard_id">ShardID</label>
+                                    <input type="text" name="editshard_shard_id" id="editshard_shard_id" value="" class="form-control" readonly="readonly" />
+                                </div>
+
+                                <div class="btn-group d-flex" role="group" aria-label="shard_transport_method">
+                                    <input type="radio" class="btn-check" name="editshard_transport_method" id="editshard_transport_method_webhook" autocomplete="off" value="webhook" checked="checked">
+                                    <label class="btn btn-outline-secondary" for="editshard_transport_method_webhook">webhook</label>
+
+                                    <input type="radio" class="btn-check" name="editshard_transport_method" id="editshard_transport_method_websocket" autocomplete="off" value="websocket">
+                                    <label class="btn btn-outline-secondary" for="editshard_transport_method_websocket">websocket</label>
+                                </div>
+
+                                <div id="editshard_transport_method_webhook_options">
+                                    <div class="input-group p-1">
+                                        <label class="input-group-text" for="editshard_transport_callback">Callback</label>
+                                        <input type="text" name="editshard_transport_callback" id="editshard_transport_callback" value="" class="form-control" />
+                                    </div>
+                                    <div class="input-group p-1">
+                                        <label class="input-group-text" for="editshard_transport_secret">Secret</label>
+                                        <input type="password" name="editshard_transport_secret" id="editshard_transport_secret" value="" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div id="editshard_transport_method_websocket_options" class="d-none">
+                                    <div class="input-group p-1">
+                                        <label class="input-group-text" for="editshard_transport_session_id">SessionID</label>
+                                        <input type="text" name="editshard_transport_session_id" id="editshard_transport_session_id" value="" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="btn-group d-flex">
+                                    <input type="submit" value="Submit Changes" class="btn btn-outline-primary" data-bs-dismiss="modal" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="updater" class="btn btn-outline-primary">Check for Update</div>
+
+    <script type="text/javascript" src="assets/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="assets/script.js"></script>
+    <script type="text/javascript" src="assets/config.js"></script>
+</body>
+</html>

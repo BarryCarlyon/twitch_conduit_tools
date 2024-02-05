@@ -100,16 +100,15 @@
   },
   "name": "barrycarlyontwitchconduittools",
   "productName": "BarryCarlyonTwitchConduitTools",
-  "description": "BarryCarlyon Twitch Conduit Tools, TODO",
+  "description": "BarryCarlyon Twitch Conduit Tools, helps you interact/test with Twitch Conduits",
   "author": "Barry Carlyon",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "app/main.js",
   "keywords": [
     "desktop-app",
     "twitch",
     "tools",
-    "extensions",
-    "twitch-extensions"
+    "twitch-api"
   ],
   "license": "WTFPL",
   "homepage": "https://github.com/BarryCarlyon/twitch_conduit_tools#readme",

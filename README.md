@@ -4,36 +4,16 @@
 
 # What is this
 
-This Program is an alternative version of the [Twitch Developer Rig](https://dev.twitch.tv/docs/extensions/rig).
-
-Primarilly this works as a glorified Rest Client but handles the required [JWT generation](https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt) or [App Access Token](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#oauth-client-credentials-flow) generation and maintance as needed.
-
-Generally it should serve as a "test tool" and not used to manage a live extension, but you could, saves you writing your own Bits Product, or Extension Config Managment tool! *If you do so it's at your own risk*!
-
-![First Launch Screenshot](screenshots/first_open.png)
-
-Check out [more Screenshots](https://github.com/BarryCarlyon/twitch_extension_tools/tree/main/screenshots)
+Todo
 
 ## Installation and Updates
 
-This is an Electron App, so it maybe installed from the GitHub [releases tab](https://github.com/BarryCarlyon/twitch_extension_tools/releases).
+This is an Electron App, so it maybe installed from the GitHub [releases tab](https://github.com/BarryCarlyon/twitch_conduit_tools/releases).
 
 The Windows Build is Code Signed with the Publisher `Barry Carlyon`
 The Mac Builds are Code Signed with Apple Cerficates that identify `Barry Carlyon`
 
-You can download the latest version, for Windows and Mac from here on GitHub under [releases](https://github.com/BarryCarlyon/twitch_extension_tools/releases). These builds will self update
-
-Or
-
-[![Download on Mac App Store](docs/mac_app_store.svg)](https://apps.apple.com/app/id1661327253)
-
-This Mac App Store build will update from the App Store itself and may lag a little behind releases here.
-
-Or
-
-Install using [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
-
-> winget install BarryCarlyon.BarryCarlyonExtensionTools
+You can download the latest version, for Windows and Mac from here on GitHub under [releases](https://github.com/BarryCarlyon/twitch_conduit_tools/releases). These builds will self update
 
 ## Uninstallation
 
@@ -50,19 +30,7 @@ Your Extensions Client IDs and secrets are stored locally unencrypted in the fil
 Windows:
 
 ```
-%appdata%/BarryCarlyonTwitchExtensionTools/
-```
-
-Mac DMG/Manual install:
-
-```
-~/Library/Application Support/BarryCarlyonTwitchExtensionTools/
-```
-
-Mac App Store
-
-```
-~/Library/Containers/com.barrycarlyon.twitch-extension-tools/Data/Library/Application\ Support/BarryCarlyonTwitchExtensionTools/
+%appdata%/BarryCarlyonTwitchConduitTools/
 ```
 
 In the file `config.json`
@@ -71,28 +39,18 @@ Which follows the format:
 
 ```json
 {
-    "extensions": {
+    "clients": {
         ...
         "a_client_id": {
             "name": "Your Entered Name",
             "client_id": "",
-            "extension_secret": "base 64 encoded secret",
-            "user_id": "Twitch owner ID"
-        },
-        ...
-        "a_client_id_with_secret": {
-            "name": "Your Entered Name",
-            "client_id": "",
-            "extension_secret": "base 64 encoded secret",
             "client_secret": "a client API secret",
-            "user_id": "Twitch owner ID",
             "access_token": "A recently generated App Access Token"
         }
         ...
     },
     "active": {
-        "client_id": "Selected active Extension ClientID set to use",
-        "version": "Selected Version to talk to"
+        "client_id": "Selected active ClientID set to use"
     },
     "window": {
         "size": [ width, height ],
@@ -105,34 +63,12 @@ Which follows the format:
 
 ## Supported Features
 
-We will use the [Get Extensions](https://dev.twitch.tv/docs/api/reference#get-extensions) API to see which features are enabled for your selected version of your extension and block/allow access in the UI as needed. Don't forget to turn on/off features (such as the Config Service of Chat Service) you'll need to use the Developer Console to do so.
-
-- [Get Extension Configuration Segment](https://dev.twitch.tv/docs/api/reference#get-extension-configuration-segment)
-- [Set Extension Configuration Segment](https://dev.twitch.tv/docs/api/reference#set-extension-configuration-segment)
-- [Set Extension Required Configuration](https://dev.twitch.tv/docs/api/reference#set-extension-required-configuration)
-- [Send Extension PubSub Message](https://dev.twitch.tv/docs/api/reference#send-extension-pubsub-message)
-- [Send Extension Chat Message](https://dev.twitch.tv/docs/api/reference#send-extension-chat-message)
-- [Get Extensions](https://dev.twitch.tv/docs/api/reference#get-extensions)
-- Simulation of the Extension Details page for the selected version of an Extension
-- Test different Versions of an Extension against the API.
-
-If a Key Sets Extension API Client Secret is Provided, alllowing the generation of [client credentials](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#oauth-client-credentials-flow)
-- Convert UserName to UserID for various endpoints via [Get Users](https://dev.twitch.tv/docs/api/reference#get-users)
-- [Get Extension Bits Products](https://dev.twitch.tv/docs/api/reference#get-extension-bits-products)
-- [Update Extension Bits Product](https://dev.twitch.tv/docs/api/reference#update-extension-bits-product)
-- [Get Extension Transactions](https://dev.twitch.tv/docs/api/reference#get-extension-transactions)
-
-## Common Gotchas/FAQ
-
-Q. No matter what I do, it just claims authentication failed when trying to validate/refresh my Extension
-
-A. Since the Extension API's _mostly_ utilise a JWT, this program creates a JWT on the fly with only a 4 second expiration. So if your system clock is _significantly_ out of date, this can generate an already expired JWT. So check your system clock is accurate.
-
-## Not Supported Features
-
-Extension View simulation, this might get explored but it's not gonna be as effective as actually testing on the Twitch Website itself (when in localtest).
-
-Whilst the Twitch Developer Rig is now marked as no longer supported, view testing in the Rig remains working, but you may need another tool to update any Rig manifests you have stored, you can check out the [Twitch Developer Rig Manifester](https://github.com/BarryCarlyon/twitch_developerrig_manifester) to provide manifest import and revision. This manifester tool _might_ at somepoint get added to this tool.
+- [Get Conduits](https://dev.twitch.tv/docs/api/reference/#get-conduits)
+- [Create Conduits](https://dev.twitch.tv/docs/api/reference/#create-conduits)
+- [Update Conduits](https://dev.twitch.tv/docs/api/reference/#update-conduits)
+- [Delete Conduit](https://dev.twitch.tv/docs/api/reference/#delete-conduit)
+- [Get Conduit Shards](https://dev.twitch.tv/docs/api/reference/#get-conduit-shards)
+- [Update Conduit Shards](https://dev.twitch.tv/docs/api/reference/#update-conduit-shards)
 
 ## Notes
 
@@ -141,16 +77,6 @@ Whilst the Twitch Developer Rig is now marked as no longer supported, view testi
 - Uses GitHub for update delivery and code management (and mac app store for MAS builds)
 - JWT tokens are generated _inside_ the App via [auth0/node-jsonwebtoken](https://github.com/auth0/node-jsonwebtoken), as apposed to "ClientSide" like [this example](https://barrycarlyon.github.io/twitch_misc/examples/extension_config/)
 - A number of [sindresorhus](https://github.com/sindresorhus/) Electron Modules.
-
-## Insomnia?
-
-Basically this app is a "save my Extension configs" Insomnia-esque Rest Client. That wraps the main Extension functions in a handy Application. With some extra features!
-
-[Insomnia](https://insomnia.rest/) is a Rest client. I have written a Plugin for Insomnia to aid with JWT generating inside Insomnia itself. You can find that [here on Github](https://github.com/BarryCarlyon/insomnia-plugin-twitch-extension-barrycarlyon)
-
-## Warranty
-
-If you break your extension from using this tool it's your own fault and the author(s) accept no responsbility for problems caused to your extension from using this tool. Granted the worse thing you might do is deprecate a bits product you actually needed.....
 
 ## License
 

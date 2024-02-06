@@ -4,7 +4,9 @@
 
 # What is this
 
-Todo
+A simple tool that provides/interacts with the Conduit API's of Twitch.
+
+Basically rathger than copy/pasting setup scripts between projects, just spool this up and throw in some ClientID's and easily project switch
 
 ## Installation and Updates
 

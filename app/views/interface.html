@@ -62,9 +62,20 @@
                             <div class="accordion-body">
                                 <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#get-conduits">Get Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#create-conduits">Create Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#delete-conduit">Delete Conduits</a></p>
 
+                                <p>You can have up to 5 Conduits per ClientID, and each Conduit can have up to 20,000 Shards. <a href="https://dev.twitch.tv/docs/eventsub/handling-conduit-events/#limits">EventSub Limit Documentation</a></p>
+
                                 <form action="" method="post" id="func_get_conduits_form">
                                     <fieldset>
-                                        <table id="getConduitsDisplay" class="table table-striped"></table>
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Conduit ID</th>
+                                                    <th>Shards</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="getConduitsDisplay"></tbody>
+                                        </table>
 
                                         <div class="btn-group p-1 float-end">
                                             <input type="button" class="btn btn-outline-danger" id="func_get_conduits_go" value="Get Conduits" />

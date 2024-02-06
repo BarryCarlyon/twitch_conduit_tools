@@ -1,6 +1,6 @@
 <img src="https://github.com/BarryCarlyon/twitch_conduit_tools/assets/20999/65d1da45-617b-481b-bf57-57b290481b23" width="100" align="right" />
 
-[![CodeQL](https://github.com/BarryCarlyon/twitch_extension_tools/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/BarryCarlyon/twitch_extension_tools/actions/workflows/codeql-analysis.yml)
+[![CodeQL](https://github.com/BarryCarlyon/twitch_conduit_tools/actions/workflows/codeql.yml/badge.svg)](https://github.com/BarryCarlyon/twitch_conduit_tools/actions/workflows/codeql.yml)
 
 # What is this
 

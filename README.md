@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/20999/211199868-8236f9d1-bddd-4fca-9157-6fa7886949fc.png" width="100" align="right" />
+<img src="https://github.com/BarryCarlyon/twitch_conduit_tools/assets/20999/65d1da45-617b-481b-bf57-57b290481b23" width="100" align="right" />
 
 [![CodeQL](https://github.com/BarryCarlyon/twitch_extension_tools/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/BarryCarlyon/twitch_extension_tools/actions/workflows/codeql-analysis.yml)
 

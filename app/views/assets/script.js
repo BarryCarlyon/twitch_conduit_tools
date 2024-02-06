@@ -82,47 +82,32 @@ function resetLoadings() {
         loadings[x].classList.remove('loading');
     }
 }
+
+const myToaster = bootstrap.Toast.getOrCreateInstance(mytoast);
+
 window.electron.errorMsg(words => {
     // reset all loadings
     resetLoadings();
     // draw
-    errorMsg(words);
+    toastSuccess(words);
 });
-function errorMsg(words) {
-    let alert = document.getElementById('alert');
 
-    if (!alert) {
-        alert = document.createElement('div');
-        alert.setAttribute('id', 'alert');
-
-        alert.classList.add('alert');
-        alert.classList.add('alert-warning');
-        alert.classList.add('alert-dismissable');
-        alert.classList.add('fade');
-        alert.classList.add('show');
-        //alert.classList.add('bg-warning');
-
-        let b = document.createElement('button');
-        b.classList.add('btn-close');
-        b.setAttribute('data-bs-dismiss', 'alert');
-        alert.append(b);
-        document.body.append(alert);
-    }
-
-    let sp = document.createElement('p');
-    sp.textContent = words;
-    alert.append(sp);
-
-    setTimeout(() => {
-        sp.remove();
-        let ps = alert.getElementsByTagName('p');
-        if (ps && ps.length > 0) {
-            return;
-        }
-        let ins = bootstrap.Alert.getOrCreateInstance(alert);
-        ins.close();
-    }, 10000);
+function toastWarning(msg) {
+    mytoast.classList.remove('text-bg-primary');
+    mytoast.classList.add('text-bg-danger');
+    toastCommon(msg);
 }
+function toastSuccess(msg) {
+    mytoast.classList.add('text-bg-primary');
+    mytoast.classList.remove('text-bg-danger');
+    toastCommon(msg);
+}
+function toastCommon(msg) {
+    mytoast.querySelector('.toast-body').textContent = msg;
+    console.log('Making Toast');
+    myToaster.show();
+}
+
 
 
 
@@ -162,7 +147,7 @@ window.electron.twitchAPIResult((data) => {
         }
     }
 
-    errorMsg(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
+    toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 
 function drawConduits(conduits) {

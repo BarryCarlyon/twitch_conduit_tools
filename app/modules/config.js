@@ -114,8 +114,8 @@ module.exports = function(lib) {
                     win.webContents.send('errorMsg', 'Token Revoke: Not Valid token');
                 }
             }
-            store.delete(`extensions.${client_id}.access_token`);
-            // broadcast extensions
+            store.delete(`clients.${client_id}.access_token`);
+
             config.relay();
         }
     }

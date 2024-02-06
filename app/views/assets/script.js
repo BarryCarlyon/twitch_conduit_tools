@@ -124,18 +124,6 @@ function errorMsg(words) {
     }, 10000);
 }
 
-function buildLayout(details) {
-    let { client_id, name } = details;
-
-    // use name somewhere but I forget where
-
-    let active_client_id = document.getElementsByClassName('active_client_id');
-    for (let x=0;x<active_client_id.length;x++) {
-        active_client_id[x].value = client_id;
-        active_client_id[x].setAttribute('readonly', 'readonly');
-    }
-}
-
 
 
 

@@ -202,7 +202,6 @@ function markDropdown(client_id) {
         if (client_id || client_id == '') {
             if (items[x].getAttribute('data-client_id') == client_id) {
                 items[x].classList.add('bg-primary');
-                select_active_extension.textContent = items[x].textContent;
             }
         }
     }
@@ -229,7 +228,7 @@ function syntaxHighlight(json) {
 
 // an extension was loaded!
 window.electron.config.selected((conf) => {
-    let { name } = conf;
+    let { client_id, name } = conf;
     console.log('selected', name);
 
     // API response so differing
@@ -237,6 +236,5 @@ window.electron.config.selected((conf) => {
     // change to run requests
     tab('run-tab');
 
-    //markDropdown(extension_details.id);
-    buildLayout(conf);
+    markDropdown(client_id);
 });

@@ -70,7 +70,7 @@ window.electron.config.clients((data) => {
         let modal = new bootstrap.Modal(document.getElementById('add_new_configuration_modal'));
         modal.show();
         // extra nudge
-        errorMsg('You have no Client Configurations. Add one to continue');
+        toastWarning('You have no Client Configurations. Add one to continue');
         return;
     }
 

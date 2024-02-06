@@ -52,14 +52,6 @@
                 </div>
             </div>
 
-<!--
-                                        <div class="input-group p-1">
-                                            <label class="input-group-text" for="client_id">client_id</label>
-                                            <input type="text" name="client_id" id="client_id" class="form-control active_client_id" />
-                                        </div>
--->
-
-
             <div class="tab-pane p-3" id="run" role="tabpanel" aria-labelledby="run-tab">
                 <div class="accordion" id="run_accordion">
                     <div class="accordion-item">
@@ -68,7 +60,7 @@
                         </h2>
                         <div id="func_get_conduits" class="accordion-collapse collapse collapse" aria-labelledby="func_get_conduits_header" data-bs-parent="#run_accordion">
                             <div class="accordion-body">
-                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#get-conduits">Get Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</a></p>
+                                <p>Test the <a href="https://dev.twitch.tv/docs/api/reference/#get-conduits">Get Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#create-conduits">Create Conduits</a> - <a href="https://dev.twitch.tv/docs/api/reference/#delete-conduit">Delete Conduits</a></p>
 
                                 <form action="" method="post" id="func_get_conduits_form">
                                     <fieldset>
@@ -104,13 +96,15 @@
                                             </thead>
                                             <tbody id="getConduitShardsDisplay"></tbody>
                                             <tfoot>
-                                                <tr><td>todo refresh button</td></tr>
+                                                <tr><td colspan="4">
+                                                    <div class="btn-group p-1 float-end">
+                                                        <input type="button" class="btn btn-outline-info" id="func_refresh_shards" value="Refresh Shards" />
+                                                    </div>
+                                                </td></tr>
                                             </tfoot>
                                         </table>
                                     </fieldset>
                                 </form>
-
-                                <div></div>
                             </div>
                         </div>
                     </div>

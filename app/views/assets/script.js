@@ -239,6 +239,7 @@ function drawConduits(conduits) {
         let tdid = r.insertCell();
         tdid.textContent = 'Empty';
         let rightCell = r.insertCell();
+        let emptyCell = r.insertCell();
         // add create button
 
         let igroup = document.createElement('div');
@@ -307,6 +308,15 @@ function getConduitShards(e) {
     getConduitShardsDisplayHeader.textContent = r.getAttribute('id');
 }
 
+func_refresh_shards.addEventListener('click', (e) => {
+    window.electron.twitchAPI(
+        'getConduitShards',
+        {
+            id: getConduitShardsDisplayHeader.textContent
+        }
+    );
+});
+
 /*
 const triggerTabList = document.querySelectorAll('#myTab button')
 triggerTabList.forEach(triggerEl => {
@@ -321,7 +331,9 @@ triggerTabList.forEach(triggerEl => {
 
 
 function drawConduitShards(resp) {
-    document.querySelector('#func_get_conduit_shards_header button').click();
+    if (document.querySelector('#func_get_conduit_shards_header button').getAttribute('aria-expanded') === 'false') {
+        document.querySelector('#func_get_conduit_shards_header button').click();
+    }
 
     let { data, pagination } = resp;
 
@@ -348,7 +360,7 @@ function drawConduitShards(resp) {
         btn.classList.add('btn');
         btn.classList.add('btn-sm');
         btn.classList.add('btn-outline-primary');
-        btn.textContent = 'Edit';
+        btn.textContent = 'Edit Shard';
         btn.addEventListener('click', openEditConduitShard);
         buttonCell.append(btn);
 

@@ -17,19 +17,19 @@ module.exports = function(lib) {
             config.relay();
         },
         loadForEdit: (event, client_id) => {
-            let extensions = store.get('extensions');
-            extensions = extensions ? extensions : {};
-            if (extensions.hasOwnProperty(client_id)) {
-                win.webContents.send('extension_loadedForEdit', extensions[client_id]);
+            let clients = store.get('clients');
+            clients = clients ? clients : {};
+            if (clients.hasOwnProperty(client_id)) {
+                win.webContents.send('loadedForEdit', clients[client_id]);
                 return;
             }
             win.webContents.send('errorMsg', `Config for ${client_id} not found`);
         },
         remove: (event, client_id) => {
-            let extensions = store.get('extensions');
-            extensions = extensions ? extensions : {};
-            delete extensions[client_id];
-            store.set('extensions', extensions);
+            let clients = store.get('clients');
+            clients = clients ? clients : {};
+            delete clients[client_id];
+            store.set('clients', clients);
 
             config.relay();
         },

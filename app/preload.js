@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld('electron', {
             ipcRenderer.send('config_loadForEdit', client_id);
         },
         loadedForEdit: (fn) => {
-            ipcRenderer.on('extension_loadedForEdit', (event, ...args) => fn(...args));
+            ipcRenderer.on('loadedForEdit', (event, ...args) => fn(...args));
         },
         remove: (client_id) => {
             ipcRenderer.send('config_remove', client_id);

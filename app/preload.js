@@ -54,6 +54,9 @@ contextBridge.exposeInMainWorld('electron', {
     twitchAPIResult: (fn) =>{
         ipcRenderer.on('twitchAPIResult', (event, ...args) => fn(...args));
     },
+    twitchAPIRate: (fn) =>{
+        ipcRenderer.on('twitchAPIRate', (event, ...args) => fn(...args));
+    },
 
     errorMsg: (fn) => {
         ipcRenderer.on('errorMsg', (event, ...args) => fn(...args));

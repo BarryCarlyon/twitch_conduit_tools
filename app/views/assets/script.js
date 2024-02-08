@@ -76,18 +76,9 @@ function tab(id) {
 }
 
 
-function resetLoadings() {
-    let loadings = document.getElementsByClassName('loading');
-    for (var x=0;x<loadings.length;x++) {
-        loadings[x].classList.remove('loading');
-    }
-}
-
 const myToaster = bootstrap.Toast.getOrCreateInstance(mytoast);
 
 window.electron.errorMsg(words => {
-    // reset all loadings
-    resetLoadings();
     // draw
     toastSuccess(words);
 });
@@ -113,17 +104,12 @@ function toastCommon(msg) {
 
 
 
-function resetLoadings() {
-    let loadings = document.getElementsByClassName('loading');
-    for (var x=0;x<loadings.length;x++) {
-        loadings[x].classList.remove('loading');
-    }
-}
 document.getElementById('func_get_conduits_go').addEventListener('click', (e) => {
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI('getConduits');
 });
 window.electron.twitchAPIResult((data) => {
-    resetLoadings();
+    master_loading.classList.remove('is_loading');
 
     if (data.hasOwnProperty('route')) {
         switch (data.route) {
@@ -138,6 +124,7 @@ window.electron.twitchAPIResult((data) => {
             case 'deleteConduits':
             case 'updateConduits':
                 // call full reload
+                master_loading.classList.add('is_loading');
                 window.electron.twitchAPI('getConduits');
                 break;
 
@@ -147,6 +134,9 @@ window.electron.twitchAPIResult((data) => {
         }
     }
 
+    toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
+});
+window.electron.twitchAPIRate((data) => {
     toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 
@@ -241,7 +231,7 @@ function drawConduits(conduits) {
 
 function createConduits(e) {
     let r = e.target.closest('tr');
-
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'createConduits',
         {
@@ -251,7 +241,7 @@ function createConduits(e) {
 }
 function deleteConduits(e) {
     let r = e.target.closest('tr');
-
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'deleteConduits',
         {
@@ -262,7 +252,7 @@ function deleteConduits(e) {
 
 function updateConduits(e) {
     let r = e.target.closest('tr');
-
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'updateConduits',
         {
@@ -273,6 +263,7 @@ function updateConduits(e) {
 }
 function getConduitShards(e) {
     let r = e.target.closest('tr');
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getConduitShards',
         {
@@ -284,6 +275,7 @@ function getConduitShards(e) {
 }
 
 func_refresh_shards.addEventListener('click', (e) => {
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getConduitShards',
         {
@@ -425,7 +417,7 @@ function toggleShardOptions(e) {
 
 shard_form.addEventListener('submit', (e) => {
     e.preventDefault();
-
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'updateConduitShards',
         {
@@ -441,3 +433,35 @@ shard_form.addEventListener('submit', (e) => {
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+
+function getConduitSubscriptions(e) {
+    let conduitID = e.target.getAttribute('data-conduit-id');
+    master_loading.classList.add('is_loading');
+    window.electron.twitchAPI(
+        'getAndFilterSubscriptions',
+        {
+            conduitID
+        }
+    );
+}
+function drawEventSubcriptions(resp) {
+    subscriptions_table.textContent = '';
+
+    if (document.querySelector('#func_got_conduit_subscriptions_header button').getAttribute('aria-expanded') === 'false') {
+        document.querySelector('#func_got_conduit_subscriptions_header button').click();
+    }
+
+    let { data } = resp;
+    //console.log(data);return;
+    for (var x=0;x<data.length;x++) {
+        let { type, version, condition } = data[x];
+        let r = subscriptions_table.insertRow();
+        var d = r.insertCell();
+        d.textContent = type;
+        var d = r.insertCell();
+        d.textContent = version;
+        var d = r.insertCell();
+        d.textContent = JSON.stringify(condition);
+    }
+}

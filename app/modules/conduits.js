@@ -68,15 +68,20 @@ module.exports = function(lib) {
         console.log(req.status, resp.data);
         //console.log(resp.data[1]);
 
-        win.webContents.send('twitchAPIResult', {
-            route,
-            status: req.status,
-            ratelimitRemain: req.headers.get('ratelimit-remaining'),
-            ratelimitLimit: req.headers.get('ratelimit-limit'),
+        if (ret) {
+            // relay rate limit
+            win.webContents.send('twitchAPIRate', {
+                status: req.status,
+                ratelimitRemain: req.headers.get('ratelimit-remaining'),
+                ratelimitLimit: req.headers.get('ratelimit-limit'),
+            });
+            // internal
+            pl.resp = resp;
+            return pl;
+        }
 
-            message: (resp.message ? resp.message : ''),
-            data: (resp.data ? resp.data : [])
-        });
+        pl.route = route;
+        win.webContents.send('twitchAPIResult', pl);
     }
 
     async function getConduits() {

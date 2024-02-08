@@ -76,9 +76,18 @@ function tab(id) {
 }
 
 
+function resetLoadings() {
+    let loadings = document.getElementsByClassName('loading');
+    for (var x=0;x<loadings.length;x++) {
+        loadings[x].classList.remove('loading');
+    }
+}
+
 const myToaster = bootstrap.Toast.getOrCreateInstance(mytoast);
 
 window.electron.errorMsg(words => {
+    // reset all loadings
+    resetLoadings();
     // draw
     toastSuccess(words);
 });
@@ -104,12 +113,17 @@ function toastCommon(msg) {
 
 
 
+function resetLoadings() {
+    let loadings = document.getElementsByClassName('loading');
+    for (var x=0;x<loadings.length;x++) {
+        loadings[x].classList.remove('loading');
+    }
+}
 document.getElementById('func_get_conduits_go').addEventListener('click', (e) => {
-    master_loading.classList.add('is_loading');
     window.electron.twitchAPI('getConduits');
 });
 window.electron.twitchAPIResult((data) => {
-    master_loading.classList.remove('is_loading');
+    resetLoadings();
 
     if (data.hasOwnProperty('route')) {
         switch (data.route) {
@@ -124,19 +138,19 @@ window.electron.twitchAPIResult((data) => {
             case 'deleteConduits':
             case 'updateConduits':
                 // call full reload
-                master_loading.classList.add('is_loading');
                 window.electron.twitchAPI('getConduits');
                 break;
 
             case 'getConduitShards':
                 drawConduitShards(data);
                 break;
+
+            case 'gotAndFilterSubscriptions':
+                drawEventSubcriptions(data);
+                break;
         }
     }
 
-    toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
-});
-window.electron.twitchAPIRate((data) => {
     toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 
@@ -190,12 +204,24 @@ function drawConduits(conduits) {
         xBtn.addEventListener('click', deleteConduits);
 
         let rightCell = r.insertCell();
+        let ibgroup = document.createElement('div');
+        rightCell.append(ibgroup);
+        ibgroup.classList.add('input-group');
+
         let getShards = document.createElement('div');
         getShards.classList.add('btn');
         getShards.classList.add('btn-outline-primary');
         getShards.textContent = 'Shards';
         getShards.addEventListener('click', getConduitShards);
-        rightCell.append(getShards);
+        ibgroup.append(getShards);
+
+        let getSubscriptions = document.createElement('div');
+        getSubscriptions.classList.add('btn');
+        getSubscriptions.classList.add('btn-outline-primary');
+        getSubscriptions.textContent = 'Subs';
+        getSubscriptions.addEventListener('click', getConduitSubscriptions);
+        getSubscriptions.setAttribute('data-conduit-id', id);
+        ibgroup.append(getSubscriptions);
     }
     let conduitMax = 5;
     for (x=x;x<conduitMax;x++) {
@@ -231,7 +257,7 @@ function drawConduits(conduits) {
 
 function createConduits(e) {
     let r = e.target.closest('tr');
-    master_loading.classList.add('is_loading');
+
     window.electron.twitchAPI(
         'createConduits',
         {
@@ -241,7 +267,7 @@ function createConduits(e) {
 }
 function deleteConduits(e) {
     let r = e.target.closest('tr');
-    master_loading.classList.add('is_loading');
+
     window.electron.twitchAPI(
         'deleteConduits',
         {
@@ -252,7 +278,7 @@ function deleteConduits(e) {
 
 function updateConduits(e) {
     let r = e.target.closest('tr');
-    master_loading.classList.add('is_loading');
+
     window.electron.twitchAPI(
         'updateConduits',
         {
@@ -263,7 +289,6 @@ function updateConduits(e) {
 }
 function getConduitShards(e) {
     let r = e.target.closest('tr');
-    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getConduitShards',
         {
@@ -275,7 +300,6 @@ function getConduitShards(e) {
 }
 
 func_refresh_shards.addEventListener('click', (e) => {
-    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getConduitShards',
         {
@@ -417,7 +441,7 @@ function toggleShardOptions(e) {
 
 shard_form.addEventListener('submit', (e) => {
     e.preventDefault();
-    master_loading.classList.add('is_loading');
+
     window.electron.twitchAPI(
         'updateConduitShards',
         {
@@ -435,9 +459,9 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 
+
 function getConduitSubscriptions(e) {
     let conduitID = e.target.getAttribute('data-conduit-id');
-    master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getAndFilterSubscriptions',
         {

@@ -43,8 +43,7 @@ module.exports = function(lib) {
     });
 
 
-    async function callTwitch(route, url, options, ret) {
-        ret = ret ?? false;
+    async function callTwitch(route, url, options) {
         let client_id = store.get('active.client_id');
 
         await accessToken(client_id);
@@ -82,7 +81,7 @@ module.exports = function(lib) {
             data: (resp.data ? resp.data : [])
         }
 
-        if (ret) {
+        if (route == 'internal') {
             // relay rate limit
             win.webContents.send('twitchAPIRate', {
                 status: req.status,
@@ -233,8 +232,7 @@ module.exports = function(lib) {
                 url,
                 {
                     method: 'GET'
-                },
-                true
+                }
             );
 
             let { resp } = pl;

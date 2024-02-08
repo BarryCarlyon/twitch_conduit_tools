@@ -144,6 +144,10 @@ window.electron.twitchAPIResult((data) => {
             case 'getConduitShards':
                 drawConduitShards(data);
                 break;
+
+            case 'gotAndFilterSubscriptions':
+                drawEventSubcriptions(data);
+                break;
         }
     }
 
@@ -200,12 +204,24 @@ function drawConduits(conduits) {
         xBtn.addEventListener('click', deleteConduits);
 
         let rightCell = r.insertCell();
+        let ibgroup = document.createElement('div');
+        rightCell.append(ibgroup);
+        ibgroup.classList.add('input-group');
+
         let getShards = document.createElement('div');
         getShards.classList.add('btn');
         getShards.classList.add('btn-outline-primary');
         getShards.textContent = 'Shards';
         getShards.addEventListener('click', getConduitShards);
-        rightCell.append(getShards);
+        ibgroup.append(getShards);
+
+        let getSubscriptions = document.createElement('div');
+        getSubscriptions.classList.add('btn');
+        getSubscriptions.classList.add('btn-outline-primary');
+        getSubscriptions.textContent = 'Subs';
+        getSubscriptions.addEventListener('click', getConduitSubscriptions);
+        getSubscriptions.setAttribute('data-conduit-id', id);
+        ibgroup.append(getSubscriptions);
     }
     let conduitMax = 5;
     for (x=x;x<conduitMax;x++) {
@@ -441,3 +457,35 @@ shard_form.addEventListener('submit', (e) => {
 
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+
+
+function getConduitSubscriptions(e) {
+    let conduitID = e.target.getAttribute('data-conduit-id');
+    window.electron.twitchAPI(
+        'getAndFilterSubscriptions',
+        {
+            conduitID
+        }
+    );
+}
+function drawEventSubcriptions(resp) {
+    subscriptions_table.textContent = '';
+
+    if (document.querySelector('#func_got_conduit_subscriptions_header button').getAttribute('aria-expanded') === 'false') {
+        document.querySelector('#func_got_conduit_subscriptions_header button').click();
+    }
+
+    let { data } = resp;
+    //console.log(data);return;
+    for (var x=0;x<data.length;x++) {
+        let { type, version, condition } = data[x];
+        let r = subscriptions_table.insertRow();
+        var d = r.insertCell();
+        d.textContent = type;
+        var d = r.insertCell();
+        d.textContent = version;
+        var d = r.insertCell();
+        d.textContent = JSON.stringify(condition);
+    }
+}

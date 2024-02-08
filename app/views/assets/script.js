@@ -158,6 +158,7 @@ function drawConduits(conduits) {
 
         let r = getConduitsDisplay.insertRow();
         r.setAttribute('id', id);
+        r.setAttribute('data-shardCount', shard_count);
 
         let tdid = r.insertCell();
         tdid.classList.add('monospace');
@@ -279,6 +280,7 @@ function getConduitShards(e) {
         }
     );
     getConduitShardsDisplayHeader.textContent = r.getAttribute('id');
+    editshard_maxshard_count.textContent = `/${r.getAttribute('data-shardCount')}`;
 }
 
 func_refresh_shards.addEventListener('click', (e) => {
@@ -325,8 +327,19 @@ function drawConduitShards(resp) {
         idCell.textContent = id;
         let statusCell = r.insertCell();
         statusCell.textContent = status;
+
         let methodCell = r.insertCell();
-        methodCell.textContent = method;
+        //methodCell.textContent = method;
+        let methodDiv = document.createElement('div');
+        methodCell.append(methodDiv);
+        methodDiv.textContent = method;
+        methodDiv.classList.add('btn');
+        methodDiv.classList.add('btn-sm');
+        methodDiv.classList.add('btn-outline-secondary');
+        methodDiv.setAttribute('data-bs-toggle', 'popover');
+        methodDiv.setAttribute('data-bs-title', method);
+        methodDiv.setAttribute('data-bs-content', (session_id ? session_id : callback));
+        new bootstrap.Popover(methodDiv);
 
         let buttonCell = r.insertCell();
         let btn = document.createElement('div');
@@ -342,14 +355,19 @@ function drawConduitShards(resp) {
         btn.setAttribute('data-callback', (callback ? callback : ''));
     }
 }
+
 function openEditConduitShard(e) {
-    let r = e.target.closest('tr');
-
-    editshard_conduit_id.value = r.getAttribute('data-conduit-id');
-    editshard_shard_id.value = r.getAttribute('data-shard-id');
-
     let modal = bootstrap.Modal.getOrCreateInstance('#EditConduitShard_modal');
     modal.show();
+
+    let r = e.target.closest('tr');
+
+    //editshard_conduit_id.value = r.getAttribute('data-conduit-id');
+    editshard_conduit_id.value = getConduitShardsDisplayHeader.textContent;
+    editshard_shard_id.value = r.getAttribute('data-shard-id');
+    editshard_shard_id.setAttribute('readonly', 'readonly');
+
+    EditConduitShard_modal.querySelector('.modal-title').textContent = `Update Shard ${editshard_shard_id.value} on ${editshard_conduit_id.value}`;
 
     // @todo: future barry problem
     // load the live details
@@ -369,6 +387,30 @@ function openEditConduitShard(e) {
         }
     })
 }
+function openEditCreateConduitShard() {
+    let conduitID = getConduitShardsDisplayHeader.textContent;
+    //
+    let modal = bootstrap.Modal.getOrCreateInstance('#EditConduitShard_modal');
+    modal.show();
+
+    editshard_conduit_id.value = getConduitShardsDisplayHeader.textContent;
+
+    EditConduitShard_modal.querySelector('.modal-title').textContent = `Touch Shard on ${conduitID}`;
+    editshard_shard_id.removeAttribute('readonly');
+
+    editshard_transport_callback.value = '';
+    editshard_transport_session_id.value = '';
+
+    editshard_transport_method_webhook.checked = true;
+    toggleShardOptions({
+        target: {
+            value: 'webhook'
+        }
+    })
+}
+
+func_edit_shard_manual.addEventListener('click', openEditCreateConduitShard);
+
 editshard_transport_method_webhook.addEventListener('change', toggleShardOptions);
 editshard_transport_method_websocket.addEventListener('change', toggleShardOptions);
 function toggleShardOptions(e) {
@@ -396,3 +438,6 @@ shard_form.addEventListener('submit', (e) => {
         }
     );
 });
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

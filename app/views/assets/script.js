@@ -325,8 +325,19 @@ function drawConduitShards(resp) {
         idCell.textContent = id;
         let statusCell = r.insertCell();
         statusCell.textContent = status;
+
         let methodCell = r.insertCell();
-        methodCell.textContent = method;
+        //methodCell.textContent = method;
+        let methodDiv = document.createElement('div');
+        methodCell.append(methodDiv);
+        methodDiv.textContent = method;
+        methodDiv.classList.add('btn');
+        methodDiv.classList.add('btn-sm');
+        methodDiv.classList.add('btn-outline-secondary');
+        methodDiv.setAttribute('data-bs-toggle', 'popover');
+        methodDiv.setAttribute('data-bs-title', method);
+        methodDiv.setAttribute('data-bs-content', (session_id ? session_id : callback));
+        new bootstrap.Popover(methodDiv);
 
         let buttonCell = r.insertCell();
         let btn = document.createElement('div');

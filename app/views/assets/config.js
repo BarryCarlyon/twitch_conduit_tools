@@ -235,6 +235,11 @@ window.electron.config.selected((conf) => {
     document.getElementById('run-tab').classList.remove('disabled');
     // change to run requests
     tab('run-tab');
+    // invoke get cond.
+    window.electron.twitchAPI('getConduits');
+    if (document.querySelector('#func_get_conduits_header button').getAttribute('aria-expanded') === 'false') {
+        document.querySelector('#func_get_conduits_header button').click();
+    }
 
     markDropdown(client_id);
 });

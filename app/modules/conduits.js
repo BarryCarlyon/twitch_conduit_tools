@@ -84,8 +84,7 @@ module.exports = function(lib) {
 
         if (ret) {
             // relay rate limit
-            win.webContents.send('twitchAPIResult', {
-                route: 'ratelimit',
+            win.webContents.send('twitchAPIRate', {
                 status: req.status,
                 ratelimitRemain: req.headers.get('ratelimit-remaining'),
                 ratelimitLimit: req.headers.get('ratelimit-limit'),

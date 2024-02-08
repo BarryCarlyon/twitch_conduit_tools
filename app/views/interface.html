@@ -109,6 +109,7 @@
                                             <tfoot>
                                                 <tr><td colspan="4">
                                                     <div class="btn-group p-1 float-end">
+                                                        <input type="button" class="btn btn-outline-info" id="func_edit_shard_manual" value="Create/Update Shard" />
                                                         <input type="button" class="btn btn-outline-info" id="func_refresh_shards" value="Refresh Shards" />
                                                     </div>
                                                 </td></tr>
@@ -200,8 +201,9 @@
                                     <input type="text" name="editshard_conduit_id" id="editshard_conduit_id" value="" class="form-control" readonly="readonly" />
                                 </div>
                                 <div class="input-group p-1">
-                                    <label class="input-group-text" for="editshard_shard_id">ShardID</label>
+                                    <label class="input-group-text" for="editshard_shard_id" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Zero Indexed!">ShardID</label>
                                     <input type="text" name="editshard_shard_id" id="editshard_shard_id" value="" class="form-control" readonly="readonly" />
+                                    <div class="input-group-text" id="editshard_maxshard_count"></div>
                                 </div>
 
                                 <div class="btn-group d-flex" role="group" aria-label="shard_transport_method">

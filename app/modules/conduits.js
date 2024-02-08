@@ -35,11 +35,16 @@ module.exports = function(lib) {
             case 'updateConduitShards':
                 updateConduitShards(details);
                 return;
+
+            case 'getAndFilterSubscriptions':
+                getAndFilterSubscriptions(details);
+                return;
         }
     });
 
 
-    async function callTwitch(route, url, options) {
+    async function callTwitch(route, url, options, ret) {
+        ret = ret ?? false;
         let client_id = store.get('active.client_id');
 
         await accessToken(client_id);
@@ -65,18 +70,33 @@ module.exports = function(lib) {
             resp = await req.json();
         }
 
-        console.log(req.status, resp.data);
+        //console.log(req.status, resp.data);
         //console.log(resp.data[1]);
 
-        win.webContents.send('twitchAPIResult', {
-            route,
+        let pl = {
             status: req.status,
             ratelimitRemain: req.headers.get('ratelimit-remaining'),
             ratelimitLimit: req.headers.get('ratelimit-limit'),
 
             message: (resp.message ? resp.message : ''),
             data: (resp.data ? resp.data : [])
-        });
+        }
+
+        if (ret) {
+            // relay rate limit
+            win.webContents.send('twitchAPIResult', {
+                route: 'ratelimit',
+                status: req.status,
+                ratelimitRemain: req.headers.get('ratelimit-remaining'),
+                ratelimitLimit: req.headers.get('ratelimit-limit'),
+            });
+            // internal
+            pl.resp = resp;
+            return pl;
+        }
+
+        pl.route = route;
+        win.webContents.send('twitchAPIResult', pl);
     }
 
     async function getConduits() {
@@ -193,5 +213,57 @@ module.exports = function(lib) {
                 body: JSON.stringify(payload)
             }
         );
+    }
+
+
+    function getAndFilterSubscriptions(details) {
+        let { conduitID } = details;
+
+        let matching = [];
+
+        async function loadPage(after) {
+            console.log('Loading', after);
+            let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
+            if (after) {
+                url.search = new URLSearchParams([
+                    [ 'after', after ]
+                ]);
+            }
+            let pl = await callTwitch(
+                'internal',
+                url,
+                {
+                    method: 'GET'
+                },
+                true
+            );
+
+            let { resp } = pl;
+            let { data, pagination } = resp;
+
+            //console.log(data);process.exit();
+            for (var x=0;x<data.length;x++) {
+                let { transport } = data[x];
+                if (transport.method == 'conduit') {
+                    if (transport.conduit_id == conduitID) {
+                        // valid
+                        matching.push(data[x]);
+                    }
+                }
+            }
+
+            if (pagination) {
+                let { cursor } = pagination;
+                if (cursor) {
+                    return loadPage(cursor);
+                }
+            }
+            // complete send to front
+            pl.route = 'gotAndFilterSubscriptions';
+            pl.data = matching;
+            win.webContents.send('twitchAPIResult', pl);
+        }
+
+        loadPage(false);
     }
 }

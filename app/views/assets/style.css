@@ -70,6 +70,14 @@ a.website:before {
     z-index: 5;
 }
 
+#master_loading.loading.is_loading {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
 #extension_details_view .card {
     font-size: 12px;
 }

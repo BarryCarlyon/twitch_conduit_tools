@@ -236,6 +236,7 @@ window.electron.config.selected((conf) => {
     // change to run requests
     tab('run-tab');
     // invoke get cond.
+    master_loading.classList.add('is_loading');
     window.electron.twitchAPI('getConduits');
     if (document.querySelector('#func_get_conduits_header button').getAttribute('aria-expanded') === 'false') {
         document.querySelector('#func_get_conduits_header button').click();

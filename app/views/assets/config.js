@@ -192,6 +192,7 @@ function bindRemove(el, ext) {
 }
 document.getElementById('actuallyRemove').addEventListener('click', (e) => {
     window.electron.config.remove(e.currentTarget.getAttribute('data-client_id'));
+    document.getElementById('actuallyRemove').removeAttribute('data-client_id');
 });
 
 

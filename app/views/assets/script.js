@@ -63,6 +63,14 @@ document.addEventListener('click', (e) => {
         e.preventDefault();
         window.electron.openWeb(e.target.getAttribute('href'));
     }
+
+    if (e.target.getAttribute('data-has-action')) {
+        switch (e.target.getAttribute('data-has-action')) {
+            case 'getConduitSubscriptions':
+                getConduitSubscriptions();
+                break;
+        }
+    }
 });
 
 
@@ -335,6 +343,9 @@ function drawConduitShards(resp) {
     if (document.querySelector('#func_get_conduit_shards_header button').getAttribute('aria-expanded') === 'false') {
         document.querySelector('#func_get_conduit_shards_header button').click();
     }
+
+    func_edit_shard_manual.classList.remove('disabled');
+    func_refresh_shards.classList.remove('disabled');
 
     let { data, pagination } = resp;
 

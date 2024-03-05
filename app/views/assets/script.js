@@ -257,14 +257,32 @@ function createConduits(e) {
 }
 function deleteConduits(e) {
     let r = e.target.closest('tr');
-    master_loading.classList.add('is_loading');
-    window.electron.twitchAPI(
-        'deleteConduits',
-        {
-            id: r.getAttribute('id')
-        }
-    );
+
+    let modal = new bootstrap.Modal(document.getElementById('rusure_modal'));
+    modal.show();
+
+    remove_name.textContent = `Conduit of ID: ${r.getAttribute('id')}`;
+    actuallyRemoveAction = function() {
+        master_loading.classList.add('is_loading');
+
+        window.electron.twitchAPI(
+            'deleteConduits',
+            {
+                id: r.getAttribute('id')
+            }
+        );
+    }
 }
+
+let actuallyRemoveAction = false;
+actuallyRemove.addEventListener('click', (e) => {
+    // the modal remove button was clicked
+    if (!actuallyRemoveAction) {
+        return;
+    }
+    actuallyRemoveAction();
+    actuallyRemoveAction = false;
+});
 
 function updateConduits(e) {
     let r = e.target.closest('tr');

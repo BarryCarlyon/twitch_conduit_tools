@@ -71,11 +71,12 @@ a.website:before {
 }
 
 #master_loading.loading.is_loading {
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     right: 0px;
     bottom: 0px;
+    z-index: 9001;
 }
 
 #extension_details_view .card {

@@ -438,10 +438,10 @@ function openEditCreateConduitShard() {
     editshard_transport_callback.value = '';
     editshard_transport_session_id.value = '';
 
-    editshard_transport_method_webhook.checked = true;
+    editshard_transport_method_websocket.checked = true;
     toggleShardOptions({
         target: {
-            value: 'webhook'
+            value: 'websocket'
         }
     })
 }

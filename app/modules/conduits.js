@@ -42,7 +42,10 @@ module.exports = function(lib) {
             case 'createSubscription':
                 createSubscription(details);
                 return;
-        }
+            case 'deleteSubscription':
+                deleteSubscription(details);
+                return;
+            }
     });
 
 
@@ -275,6 +278,17 @@ module.exports = function(lib) {
             {
                 method: 'POST',
                 body: JSON.stringify(payload)
+            }
+        );
+    }
+    async function deleteSubscription(details) {
+        let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
+        callTwitch(
+            'deletedSubscription',
+            url,
+            {
+                method: 'DELETE',
+                body: JSON.stringify(details)
             }
         );
     }

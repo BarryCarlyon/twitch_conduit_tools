@@ -93,10 +93,12 @@ function tab(id) {
 
 
 const myToaster = bootstrap.Toast.getOrCreateInstance(mytoast);
+const rateToaster = bootstrap.Toast.getOrCreateInstance(ratetoast);
 
 window.electron.errorMsg(words => {
     // draw
-    toastSuccess(words);
+    console.log('ErrorMsg', words);
+    toastWarning(words);
 });
 
 function toastWarning(msg) {
@@ -111,10 +113,14 @@ function toastSuccess(msg) {
 }
 function toastCommon(msg) {
     mytoast.querySelector('.toast-body').textContent = msg;
-    console.log('Making Toast');
+    console.log('Making Toast', msg);
     myToaster.show();
 }
-
+function toastRate(msg) {
+    ratetoast.querySelector('.toast-body').textContent = msg;
+    console.log('Making RateToast', msg);
+    rateToaster.show();
+}
 
 
 
@@ -155,13 +161,18 @@ window.electron.twitchAPIResult((data) => {
             case 'createSubscriptionResult':
                 createSubscriptionResult(data);
                 break;
+            case 'deletedSubscription':
+                // full reload?
+                deletedSubscription(data);
+                break;
         }
     }
 
-    toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
+    toastRate(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 window.electron.twitchAPIRate((data) => {
-    toastSuccess(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
+    console.log('twitchAPIRate', data);
+    toastRate(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 
 function drawConduits(conduits) {
@@ -294,6 +305,7 @@ function deleteConduits(e) {
     remove_name.textContent = `Conduit of ID: ${r.getAttribute('id')}`;
     actuallyRemoveAction = function() {
         master_loading.classList.add('is_loading');
+
 
         window.electron.twitchAPI(
             'deleteConduits',
@@ -532,14 +544,67 @@ function drawEventSubcriptions(resp) {
     let { data } = resp;
     //console.log(data);return;
     for (var x=0;x<data.length;x++) {
-        let { type, version, condition } = data[x];
+        let { id, type, version, condition } = data[x];
         let r = subscriptions_table.insertRow();
+        r.setAttribute('id', id);
+
         var d = r.insertCell();
         d.textContent = type;
         var d = r.insertCell();
         d.textContent = version;
         var d = r.insertCell();
         d.textContent = JSON.stringify(condition);
+
+        var d = r.insertCell();
+
+        let a_remove = document.createElement('button');
+        a_remove.classList.add('btn');
+        a_remove.classList.add('btn-sm');
+        a_remove.classList.add('btn-outline-danger');
+        a_remove.setAttribute('title', 'Remove this subscription');
+        a_remove.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg>'
+        d.append(a_remove);
+
+        a_remove.addEventListener('click', deleteSubscription);
+    }
+}
+
+let deletedSubscriptionId = '';
+function deleteSubscription(e) {
+    let r = e.target.closest('tr');
+
+    let modal = new bootstrap.Modal(document.getElementById('rusure_modal'));
+    modal.show();
+
+    remove_name.textContent = `Subscription of ID: ${r.getAttribute('id')}`;
+    actuallyRemoveAction = function() {
+        master_loading.classList.add('is_loading');
+
+        deletedSubscriptionId = r.getAttribute('id');
+
+        window.electron.twitchAPI(
+            'deleteSubscription',
+            {
+                id: r.getAttribute('id')
+            }
+        );
+    }
+}
+function deletedSubscription(pl) {
+    console.log('in delete', deletedSubscriptionId);
+    let { status, message } = pl;
+    let { ratelimitRemain, ratelimitLimit } = pl;
+
+    if (status == 204) {
+        // toast
+        toastSuccess(`Deleted: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
+        let el = document.getElementById(deletedSubscriptionId);
+        console.log(el);
+        if (el) {
+            el.remove();
+        }
+    } else {
+        toastWarning(`Failed: ${status} - ${message}`);
     }
 }
 
@@ -613,7 +678,7 @@ function createSubscriptionResult(pl) {
 
     if (status == 202) {
         // toast
-        toastSuccess(`HTTP: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
+        toastSuccess(`Created: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
         // dismissmodal
         let modal = bootstrap.Modal.getOrCreateInstance('#CreateSubscription_modal');
         modal.hide();

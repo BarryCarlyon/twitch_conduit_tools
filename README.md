@@ -71,6 +71,7 @@ Which follows the format:
 - [Delete Conduit](https://dev.twitch.tv/docs/api/reference/#delete-conduit)
 - [Get Conduit Shards](https://dev.twitch.tv/docs/api/reference/#get-conduit-shards)
 - [Update Conduit Shards](https://dev.twitch.tv/docs/api/reference/#update-conduit-shards)
+- [Manage Subscriptions for the Conduit](https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription)
 
 ## Notes
 

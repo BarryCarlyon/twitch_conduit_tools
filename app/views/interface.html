@@ -131,6 +131,7 @@
                             <div class="accordion-body">
                                 <p>Fetch <a href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</a> for this Conduit</p>
 
+                                <div id="getConduitSubscriptionsDisplayHeader"></div>
                                 <table class="table table-striped table-hover">
                                     <thead>
                                         <tr>
@@ -140,6 +141,17 @@
                                         </tr>
                                     </thead>
                                     <tbody id="subscriptions_table"></tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input type="button" class="btn btn-outline-info" id="func_load_subscription" value="Refresh" />
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                <input type="button" class="btn btn-outline-info float-end" id="func_create_subscription" value="Create Sub" />
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -258,6 +270,60 @@
 
                                 <div class="btn-group d-flex">
                                     <input type="submit" value="Submit Changes" class="btn btn-outline-primary" data-bs-dismiss="modal" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="CreateSubscription_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Create Subscription on Conduit</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" id="create_subscription_form">
+                            <fieldset>
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="create_subscription_type">Type</label>
+                                    <input type="text" name="create_subscription_type" id="create_subscription_type" value="" class="form-control" />
+                                </div>
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="create_subscription_version">Version</label>
+                                    <input type="text" name="create_subscription_version" id="create_subscription_version" value="" class="form-control" />
+                                </div>
+
+                                <div id="create_subscription_condition">
+                                    <div class="input-group p-1">
+                                        <input type="text" name="create_subscription_condition_field[]" placeholder="Condition Field" value="" class="form-control" />
+                                        <input type="text" name="create_subscription_condition_value[]" placeholder="Condition Value" value="" class="form-control" />
+                                        <!--
+                                        <button class="btn btn-outline-danger" id="create_subscription_condition_remove">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg>
+                                        </button>
+                                        -->
+
+                                        <button class="btn btn-outline-primary" id="create_subscription_condition_add">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-node-plus" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8M6.025 7.5a5 5 0 1 1 0 1H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5zM11 5a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 11 5M1.5 7a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="input-group p-1">
+                                    <label class="input-group-text" for="create_subscription_method">Method</label>
+                                    <input type="text" name="create_subscription_method" id="create_subscription_method" value="conduit" class="form-control" readonly="readonly" />
+
+                                    <label class="input-group-text" for="create_subscription_conduit_id">ConduitID</label>
+                                    <input type="text" name="create_subscription_conduit_id" id="create_subscription_conduit_id" value="" class="form-control" readonly="readonly" />
+                                </div>
+
+                                <div class="btn-group d-flex">
+                                    <!--  data-bs-dismiss="modal" -->
+                                    <input type="submit" value="Create Subscription" class="btn btn-outline-primary" />
                                 </div>
                             </fieldset>
                         </form>

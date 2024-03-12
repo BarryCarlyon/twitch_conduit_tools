@@ -39,6 +39,9 @@ module.exports = function(lib) {
             case 'getAndFilterSubscriptions':
                 getAndFilterSubscriptions(details);
                 return;
+            case 'createSubscription':
+                createSubscription(details);
+                return;
         }
     });
 
@@ -262,5 +265,17 @@ module.exports = function(lib) {
         }
 
         loadPage(false);
+    }
+
+    async function createSubscription(payload) {
+        let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
+        await callTwitch(
+            'createSubscriptionResult',
+            url,
+            {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            }
+        );
     }
 }

@@ -160,3 +160,7 @@ pre.json {
 .input-group {
     flex-wrap: nowrap;
 }
+
+svg {
+    pointer-events: none;
+}

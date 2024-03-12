@@ -65,9 +65,17 @@ document.addEventListener('click', (e) => {
     }
 
     if (e.target.getAttribute('data-has-action')) {
+        console.log(e.target.getAttribute('data-has-action'));
         switch (e.target.getAttribute('data-has-action')) {
             case 'getConduitSubscriptions':
                 getConduitSubscriptions();
+                break;
+            case 'removeSubscriptionCondition':
+                e.preventDefault();
+                //let el = e.currentTarget.parentElement.cloneNode(true);
+                console.log(e.target);
+                console.log(e.target.parentElement);
+                e.target.parentElement.remove();
                 break;
         }
     }
@@ -143,6 +151,10 @@ window.electron.twitchAPIResult((data) => {
             case 'gotAndFilterSubscriptions':
                 drawEventSubcriptions(data);
                 break;
+
+            case 'createSubscriptionResult':
+                createSubscriptionResult(data);
+                break;
         }
     }
 
@@ -213,6 +225,7 @@ function drawConduits(conduits) {
         getShards.addEventListener('click', getConduitShards);
         ibgroup.append(getShards);
 
+        /*
         let getSubscriptions = document.createElement('div');
         getSubscriptions.classList.add('btn');
         getSubscriptions.classList.add('btn-outline-primary');
@@ -220,6 +233,15 @@ function drawConduits(conduits) {
         getSubscriptions.addEventListener('click', getConduitSubscriptions);
         getSubscriptions.setAttribute('data-conduit-id', id);
         ibgroup.append(getSubscriptions);
+        */
+
+        let useConduit = document.createElement('div');
+        useConduit.classList.add('btn');
+        useConduit.classList.add('btn-outline-primary');
+        useConduit.textContent = 'Use';
+        useConduit.addEventListener('click', useConduitSubscriptions);
+        useConduit.setAttribute('data-conduit-id', id);
+        ibgroup.append(useConduit);
     }
     let conduitMax = 5;
     for (x=x;x<conduitMax;x++) {
@@ -481,13 +503,22 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 
 
+function useConduitSubscriptions(e) {
+    getConduitSubscriptionsDisplayHeader.textContent = e.target.getAttribute('data-conduit-id');
+
+    if (document.querySelector('#func_got_conduit_subscriptions_header button').getAttribute('aria-expanded') === 'false') {
+        document.querySelector('#func_got_conduit_subscriptions_header button').click();
+    }
+}
 function getConduitSubscriptions(e) {
-    let conduitID = e.target.getAttribute('data-conduit-id');
+    //let conduitID = e.target.getAttribute('data-conduit-id');
+    //getConduitSubscriptionsDisplayHeader.textContent = conduitID;
+
     master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getAndFilterSubscriptions',
         {
-            conduitID
+            conduitID: getConduitSubscriptionsDisplayHeader.textContent
         }
     );
 }
@@ -509,5 +540,84 @@ function drawEventSubcriptions(resp) {
         d.textContent = version;
         var d = r.insertCell();
         d.textContent = JSON.stringify(condition);
+    }
+}
+
+func_load_subscription.addEventListener('click', (e) => {
+    getConduitSubscriptions();
+});
+func_create_subscription.addEventListener('click', (e) => {
+    let modal = bootstrap.Modal.getOrCreateInstance('#CreateSubscription_modal');
+    modal.show();
+
+    // populate
+    create_subscription_conduit_id.value = getConduitSubscriptionsDisplayHeader.textContent;
+});
+
+/*
+create_subscription_condition_remove.addEventListener('click', (e) => {
+    e.target.parentNode().remove();
+});
+*/
+create_subscription_condition_add.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    let el = e.currentTarget.parentElement.cloneNode(true);
+    console.log(el);
+    let add = el.querySelector('#create_subscription_condition_add');
+    add.removeAttribute('id');
+    add.classList.remove('btn-outline-primary');
+    add.classList.add('btn-outline-danger');
+    add.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg>';
+    add.setAttribute('data-has-action', 'removeSubscriptionCondition');
+
+    create_subscription_condition.append(el);
+});
+create_subscription_form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // collect the form
+    let payload = {
+        type: create_subscription_type.value,
+        version: create_subscription_version.value,
+        condition: {
+        },
+        transport: {
+            method: 'conduit',
+            conduit_id: getConduitSubscriptionsDisplayHeader.textContent
+        }
+    }
+
+    let fields = create_subscription_condition.querySelectorAll('input[name="create_subscription_condition_field[]"]');
+    let values = create_subscription_condition.querySelectorAll('input[name="create_subscription_condition_value[]"]');
+
+    for (var x=0;x<fields.length;x++) {
+        let field = fields[x].value;
+        let value = values[x].value;
+        if (field != '' && value != '') {
+            payload.condition[field] = value;
+        }
+    }
+
+    // and dispatch
+    console.log(payload);
+
+    master_loading.classList.add('is_loading');
+
+    // dimiss?
+    window.electron.twitchAPI('createSubscription', payload);
+});
+function createSubscriptionResult(pl) {
+    let { status, message } = pl;
+    let { ratelimitRemain, ratelimitLimit } = pl;
+
+    if (status == 202) {
+        // toast
+        toastSuccess(`HTTP: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
+        // dismissmodal
+        let modal = bootstrap.Modal.getOrCreateInstance('#CreateSubscription_modal');
+        modal.hide();
+    } else {
+        toastWarning(`Failed: ${status} - ${message}`);
     }
 }

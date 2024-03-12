@@ -24,7 +24,7 @@ a.website:before {
     background-repeat: no-repeat;
 }
 
-#mytoast {
+#toaster {
     position: fixed;
     bottom: 10px;
     left: 10px;

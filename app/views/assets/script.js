@@ -175,6 +175,8 @@ window.electron.twitchAPIRate((data) => {
     toastRate(`HTTP: ${data.status} Ratelimit: ${data.ratelimitRemain}/${data.ratelimitLimit}`);
 });
 
+let conduitOperatingOn = '';
+
 function drawConduits(conduits) {
     getConduitsDisplay.textContent = '';
 
@@ -187,7 +189,12 @@ function drawConduits(conduits) {
 
         let tdid = r.insertCell();
         tdid.classList.add('monospace');
-        tdid.textContent = id;
+        let cid = document.createElement('input');
+        cid.classList.add('form-control');
+        cid.setAttribute('type', 'text');
+        cid.setAttribute('readonly', 'readonly');
+        cid.value = id;
+        tdid.append(cid);// add a copy to clipboard button?
         // @todo: add field to give name
         // and display name locally
 
@@ -227,7 +234,8 @@ function drawConduits(conduits) {
         let rightCell = r.insertCell();
         let ibgroup = document.createElement('div');
         rightCell.append(ibgroup);
-        ibgroup.classList.add('input-group');
+        ibgroup.classList.add('btn-group');
+        ibgroup.classList.add('d-flex');
 
         let getShards = document.createElement('div');
         getShards.classList.add('btn');
@@ -260,7 +268,7 @@ function drawConduits(conduits) {
         let tdid = r.insertCell();
         tdid.textContent = 'Empty';
         let rightCell = r.insertCell();
-        let emptyCell = r.insertCell();
+        rightCell.setAttribute('colspan', 2);
         // add create button
 
         let igroup = document.createElement('div');
@@ -337,6 +345,16 @@ function updateConduits(e) {
         }
     );
 }
+
+function selectConduit(conduit_id) {
+    conduitOperatingOn = conduit_id;
+    getConduitShardsDisplayHeader.textContent = conduit_id;
+    getConduitSubscriptionsDisplayHeader.textContent = conduit_id;
+
+    func_edit_shard_manual.classList.remove('disabled');
+    func_refresh_shards.classList.remove('disabled');
+}
+
 function getConduitShards(e) {
     let r = e.target.closest('tr');
     master_loading.classList.add('is_loading');
@@ -346,7 +364,7 @@ function getConduitShards(e) {
             id: r.getAttribute('id')
         }
     );
-    getConduitShardsDisplayHeader.textContent = r.getAttribute('id');
+    selectConduit(r.getAttribute('id'));
     editshard_maxshard_count.textContent = `/${r.getAttribute('data-shardCount')}`;
 }
 
@@ -355,7 +373,7 @@ func_refresh_shards.addEventListener('click', (e) => {
     window.electron.twitchAPI(
         'getConduitShards',
         {
-            id: getConduitShardsDisplayHeader.textContent
+            id: conduitOperatingOn
         }
     );
 });
@@ -378,9 +396,6 @@ function drawConduitShards(resp) {
         document.querySelector('#func_get_conduit_shards_header button').click();
     }
 
-    func_edit_shard_manual.classList.remove('disabled');
-    func_refresh_shards.classList.remove('disabled');
-
     let { data, pagination } = resp;
 
     getConduitShardsDisplay.textContent = '';
@@ -391,7 +406,7 @@ function drawConduitShards(resp) {
 
         // build ui
         let r = getConduitShardsDisplay.insertRow();
-        r.setAttribute('data-conduit-id', getConduitShardsDisplayHeader.textContent);
+        r.setAttribute('data-conduit-id', conduitOperatingOn);
         r.setAttribute('data-shard-id', id);
 
         let idCell = r.insertCell();
@@ -433,8 +448,7 @@ function openEditConduitShard(e) {
 
     let r = e.target.closest('tr');
 
-    //editshard_conduit_id.value = r.getAttribute('data-conduit-id');
-    editshard_conduit_id.value = getConduitShardsDisplayHeader.textContent;
+    editshard_conduit_id.value = conduitOperatingOn;
     editshard_shard_id.value = r.getAttribute('data-shard-id');
     editshard_shard_id.setAttribute('readonly', 'readonly');
 
@@ -459,12 +473,12 @@ function openEditConduitShard(e) {
     })
 }
 function openEditCreateConduitShard() {
-    let conduitID = getConduitShardsDisplayHeader.textContent;
+    let conduitID = conduitOperatingOn;
     //
     let modal = bootstrap.Modal.getOrCreateInstance('#EditConduitShard_modal');
     modal.show();
 
-    editshard_conduit_id.value = getConduitShardsDisplayHeader.textContent;
+    editshard_conduit_id.value = conduitOperatingOn;
 
     EditConduitShard_modal.querySelector('.modal-title').textContent = `Touch Shard on ${conduitID}`;
     editshard_shard_id.removeAttribute('readonly');
@@ -516,21 +530,18 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 
 function useConduitSubscriptions(e) {
-    getConduitSubscriptionsDisplayHeader.textContent = e.target.getAttribute('data-conduit-id');
+    selectConduit(e.target.getAttribute('data-conduit-id'));
 
     if (document.querySelector('#func_got_conduit_subscriptions_header button').getAttribute('aria-expanded') === 'false') {
         document.querySelector('#func_got_conduit_subscriptions_header button').click();
     }
 }
 function getConduitSubscriptions(e) {
-    //let conduitID = e.target.getAttribute('data-conduit-id');
-    //getConduitSubscriptionsDisplayHeader.textContent = conduitID;
-
     master_loading.classList.add('is_loading');
     window.electron.twitchAPI(
         'getAndFilterSubscriptions',
         {
-            conduitID: getConduitSubscriptionsDisplayHeader.textContent
+            conduitID: conduitOperatingOn
         }
     );
 }
@@ -544,7 +555,7 @@ function drawEventSubcriptions(resp) {
     let { data } = resp;
     //console.log(data);return;
     for (var x=0;x<data.length;x++) {
-        let { id, type, version, condition } = data[x];
+        let { id, type, version, condition, status } = data[x];
         let r = subscriptions_table.insertRow();
         r.setAttribute('id', id);
 
@@ -554,6 +565,8 @@ function drawEventSubcriptions(resp) {
         d.textContent = version;
         var d = r.insertCell();
         d.textContent = JSON.stringify(condition);
+        var d = r.insertCell();
+        d.textContent = status;;
 
         var d = r.insertCell();
 
@@ -616,7 +629,7 @@ func_create_subscription.addEventListener('click', (e) => {
     modal.show();
 
     // populate
-    create_subscription_conduit_id.value = getConduitSubscriptionsDisplayHeader.textContent;
+    create_subscription_conduit_id.value = conduitOperatingOn;
 });
 
 /*
@@ -649,7 +662,7 @@ create_subscription_form.addEventListener('submit', (e) => {
         },
         transport: {
             method: 'conduit',
-            conduit_id: getConduitSubscriptionsDisplayHeader.textContent
+            conduit_id: conduitOperatingOn
         }
     }
 

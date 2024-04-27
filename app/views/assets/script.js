@@ -641,7 +641,12 @@ create_subscription_condition_add.addEventListener('click', (e) => {
     e.preventDefault();
 
     let el = e.currentTarget.parentElement.cloneNode(true);
-    console.log(el);
+    //console.log(el);
+    let items = el.querySelectorAll('input');
+    items.forEach(subEl => {
+        subEl.value = '';
+    });
+
     let add = el.querySelector('#create_subscription_condition_add');
     add.removeAttribute('id');
     add.classList.remove('btn-outline-primary');
@@ -650,6 +655,14 @@ create_subscription_condition_add.addEventListener('click', (e) => {
     add.setAttribute('data-has-action', 'removeSubscriptionCondition');
 
     create_subscription_condition.append(el);
+
+    items[0].focus();
+});
+create_subscription_form.addEventListener('reset', (e) => {
+    let cond = create_subscription_conduit_id.value;
+    setTimeout(() => {
+        create_subscription_conduit_id.value = cond;
+    }, 100);
 });
 create_subscription_form.addEventListener('submit', (e) => {
     e.preventDefault();

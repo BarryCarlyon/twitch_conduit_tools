@@ -2,7 +2,6 @@ window.electron.config.location((loc) => {
     document.getElementById('config_location').textContent = loc;
 });
 
-
 document.getElementById('create_button').addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -70,7 +69,7 @@ window.electron.config.clients((data) => {
         let modal = new bootstrap.Modal(document.getElementById('add_new_configuration_modal'));
         modal.show();
         // extra nudge
-        toastWarning('You have no Client Configurations. Add one to continue');
+        toaster.error('You have no Client Configurations. Add one to continue');
         return;
     }
 
@@ -84,7 +83,7 @@ window.electron.config.clients((data) => {
     document.getElementById('create_button').value = "Create Client Configuration";
 
     for (var ref in clients) {
-        let { client_id, name } = clients[ref];
+        let { client_id, name, has_access_token } = clients[ref];
 
         let row = el.insertRow();
 
@@ -140,6 +139,22 @@ window.electron.config.clients((data) => {
 
         grp.append(a_settings);
 
+        // revoke
+        let a_revoke = document.createElement('button');
+        a_revoke.classList.add('btn');
+        a_revoke.classList.add('btn-sm');
+        a_revoke.classList.add('btn-outline-danger');
+        a_revoke.setAttribute('data-client_id', client_id);
+        a_revoke.setAttribute('title', 'If button is enabled, this button will revoke an App Access Token generated for this ClientID');
+        a_revoke.textContent = 'Revoke';
+
+        if (has_access_token) {
+        } else {
+            a_revoke.setAttribute('disabled','disabled');
+        }
+
+        bindRevoke(a_revoke, { client_id, name });
+        grp.append(a_revoke);
 
         let a_remove = document.createElement('button');
         a_remove.classList.add('btn');

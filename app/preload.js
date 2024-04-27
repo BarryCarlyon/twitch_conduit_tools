@@ -40,6 +40,13 @@ contextBridge.exposeInMainWorld('electron', {
             ipcRenderer.on('config_selected', (event, ...args) => fn(...args));
         },
 
+        selectConduit: (conduit_id) => {
+            ipcRenderer.send('config_conduit_select', conduit_id);
+        },
+        selectedConduit: (fn) => {
+            ipcRenderer.on('config_conduit_selected', (event, ...args) => fn(...args));
+        },
+
         revokeToken: (client_id) => {
             ipcRenderer.send('config_revoke', client_id);
         }

@@ -51,8 +51,18 @@ module.exports = function(lib) {
         },
         relay: () => {
             console.log('Config Punt');
+
+            let clients = store.get('clients');
+            for (var client_id in clients) {
+                clients[client_id].has_access_token = false;
+                if (clients[client_id].access_token && clients[client_id].access_token != '') {
+                    clients[client_id].has_access_token = true;
+                }
+                delete clients[client_id].access_token;
+            }
+
             win.webContents.send('config_clients', {
-                clients: store.get('clients'),
+                clients,
                 active_client_id: store.get('active.client_id')
             });
         },
@@ -61,6 +71,7 @@ module.exports = function(lib) {
             let clients = store.get('clients');
             if (clients.hasOwnProperty(client_id)) {
                 store.set('active.client_id', client_id);
+                store.delete('active.conduit_id');
 
                 win.webContents.send('config_selected', clients[client_id]);
 
@@ -71,7 +82,7 @@ module.exports = function(lib) {
         },
 
         revoke: async (event, client_id) => {
-            let token = store.get(`extensions.${client_id}.access_token`);
+            let token = store.get(`clients.${client_id}.access_token`);
             console.log('About to revoke', client_id, token);
             if (token) {
                 // to revoke a token
@@ -109,7 +120,11 @@ module.exports = function(lib) {
                     );
                     // do do not care about the response really
 
-                    win.webContents.send('errorMsg', 'Token Revoke: ' + revoke_result.status);
+                    if (revoke_result.status == 200) {
+                        win.webContents.send('errorMsg', 'Token Revoked OK');
+                    } else {
+                        win.webContents.send('errorMsg', `Token Revoke: ${revoke_result.status} - ${await revoke_result.text()}`);
+                    }
                 } else {
                     win.webContents.send('errorMsg', 'Token Revoke: Not Valid token');
                 }

@@ -29,7 +29,7 @@ module.exports = function(lib) {
                 return;
             // Get Conduit Shards - https://dev.twitch.tv/docs/api/reference/#get-conduit-shards
             case 'getConduitShards':
-                getConduitShards(details);
+                getConduitShards();
                 return;
             // Update Conduit Shards - https://dev.twitch.tv/docs/api/reference/#update-conduit-shards
             case 'updateConduitShards':
@@ -37,7 +37,7 @@ module.exports = function(lib) {
                 return;
 
             case 'getAndFilterSubscriptions':
-                getAndFilterSubscriptions(details);
+                getAndFilterSubscriptions();
                 return;
             case 'createSubscription':
                 createSubscription(details);
@@ -126,6 +126,7 @@ module.exports = function(lib) {
         );
     }
     async function deleteConduits(details) {
+        console.log('deleteCondtuis', details);
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
         callTwitch(
             'deleteConduits',
@@ -137,9 +138,10 @@ module.exports = function(lib) {
         );
     }
 
-    function updateConduits(payload) {
+    async function updateConduits(payload) {
+        console.log('updateConduits', payload);
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
-        callTwitch(
+        await callTwitch(
             'updateConduits',
             url,
             {
@@ -150,10 +152,11 @@ module.exports = function(lib) {
     }
 
     function getConduitShards(details) {
-        let { id, after } = details;
+        details = details ? details : {};
+        let { after } = details;
 
         let params = [
-            [ 'conduit_id', id ]
+            [ 'conduit_id', store.get('active.conduit_id') ]
         ]
         if (details.hasOwnProperty('after')) {
             params.push([ 'after', after ]);
@@ -178,8 +181,9 @@ module.exports = function(lib) {
     }
 
     function updateConduitShards(details) {
+        let conduit_id = store.get('active.conduit_id');
         // extract
-        let { conduit_id, shard_id } = details;
+        let { shard_id } = details;
         let { transport } = details;
         let { callback, secret, session_id } = details;
         // sanity check
@@ -220,8 +224,12 @@ module.exports = function(lib) {
     }
 
 
-    function getAndFilterSubscriptions(details) {
-        let { conduitID } = details;
+    function getAndFilterSubscriptions() {
+        let conduitID = store.get('active.conduit_id');
+        if (!conduitID) {
+            console.error('No Active Conduit');
+            return;
+        }
 
         let matching = [];
 
@@ -292,4 +300,15 @@ module.exports = function(lib) {
             }
         );
     }
+
+
+    ipcMain.on('config_conduit_select', async (event, conduit_id) => {
+        // check conduit is ours/acitve/loadable?
+        console.log('setting to', conduit_id);
+        // set and punt
+        await store.set('active.conduit_id', conduit_id);
+        win.webContents.send('config_conduit_selected', conduit_id);
+    });
+    // wipe at restart
+    store.delete('active.conduit_id');
 }

@@ -651,6 +651,12 @@ create_subscription_condition_add.addEventListener('click', (e) => {
 
     create_subscription_condition.append(el);
 });
+create_subscription_form.addEventListener('reset', (e) => {
+    let cond = create_subscription_conduit_id.value;
+    setTimeout(() => {
+        create_subscription_conduit_id.value = cond;
+    }, 100);
+});
 create_subscription_form.addEventListener('submit', (e) => {
     e.preventDefault();
 

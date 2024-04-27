@@ -140,7 +140,7 @@
                                             <th>Type</th>
                                             <th>Version</th>
                                             <th>Condition</th>
-<th>State</th>
+                                            <th>State</th>
                                             <th>-</th>
                                         </tr>
                                     </thead>
@@ -294,17 +294,17 @@
                             <fieldset>
                                 <div class="input-group p-1">
                                     <label class="input-group-text" for="create_subscription_type">Type</label>
-                                    <input type="text" name="create_subscription_type" id="create_subscription_type" value="" class="form-control" />
+                                    <input type="text" name="create_subscription_type" id="create_subscription_type" value="" class="form-control" required />
                                 </div>
                                 <div class="input-group p-1">
                                     <label class="input-group-text" for="create_subscription_version">Version</label>
-                                    <input type="text" name="create_subscription_version" id="create_subscription_version" value="" class="form-control" />
+                                    <input type="text" name="create_subscription_version" id="create_subscription_version" value="" class="form-control" required />
                                 </div>
 
                                 <div id="create_subscription_condition">
                                     <div class="input-group p-1">
-                                        <input type="text" name="create_subscription_condition_field[]" placeholder="Condition Field" value="" class="form-control" />
-                                        <input type="text" name="create_subscription_condition_value[]" placeholder="Condition Value" value="" class="form-control" />
+                                        <input type="text" name="create_subscription_condition_field[]" placeholder="Condition Field" value="" class="form-control" required />
+                                        <input type="text" name="create_subscription_condition_value[]" placeholder="Condition Value" value="" class="form-control" required />
                                         <!--
                                         <button class="btn btn-outline-danger" id="create_subscription_condition_remove">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/></svg>
@@ -319,14 +319,15 @@
 
                                 <div class="input-group p-1">
                                     <label class="input-group-text" for="create_subscription_method">Method</label>
-                                    <input type="text" name="create_subscription_method" id="create_subscription_method" value="conduit" class="form-control" readonly="readonly" />
+                                    <input type="text" name="create_subscription_method" id="create_subscription_method" value="conduit" class="form-control" readonly="readonly" required />
 
                                     <label class="input-group-text" for="create_subscription_conduit_id">ConduitID</label>
-                                    <input type="text" name="create_subscription_conduit_id" id="create_subscription_conduit_id" value="" class="form-control" readonly="readonly" />
+                                    <input type="text" name="create_subscription_conduit_id" id="create_subscription_conduit_id" value="" class="form-control" readonly="readonly" required />
                                 </div>
 
                                 <div class="btn-group d-flex">
                                     <!--  data-bs-dismiss="modal" -->
+                                    <input type="reset" value="Reset Form" class="btn btn-outline-secondary" />
                                     <input type="submit" value="Create Subscription" class="btn btn-outline-primary" />
                                 </div>
                             </fieldset>

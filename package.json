@@ -7,7 +7,7 @@
         "css": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css",
         "start": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css && set NODE_ENV=development && electron .",
         "test": "set NODE_ENV=development && set DEBUG=* && electron .",
-        "publish": "electron-builder -p always --win --x64 --mac"
+        "publish": "electron-builder -p always --win"
     },
     "build": {
         "appId": "com.barrycarlyon.twitch-conduit-tools",
@@ -62,10 +62,10 @@
                     "MacOSX"
                 ]
             },
-            "mergeASARs": true,
             "notarize": {
                 "teamId": "33X3RUCND8"
-            }
+            },
+            "mergeASARs": true
         },
         "dmg": {
             "backgroundColor": "#382f2b",

@@ -1,11 +1,7 @@
 /**
  * Houses all the functions for CRUD of configuration sets
-**/
-module.exports = function(lib) {
-    let { ipcMain, win, store } = lib;
-
-    const fetch = require('electron-fetch').default;
-
+ **/
+export default function ({ ipcMain, win, store }) {
     let config = {
         create: (event, args) => {
             //console.log(args);
@@ -17,19 +13,19 @@ module.exports = function(lib) {
             config.relay();
         },
         loadForEdit: (event, client_id) => {
-            let clients = store.get('clients');
+            let clients = store.get("clients");
             clients = clients ? clients : {};
             if (clients.hasOwnProperty(client_id)) {
-                win.webContents.send('loadedForEdit', clients[client_id]);
+                win.webContents.send("loadedForEdit", clients[client_id]);
                 return;
             }
-            win.webContents.send('errorMsg', `Config for ${client_id} not found`);
+            win.webContents.send("errorMsg", `Config for ${client_id} not found`);
         },
         remove: (event, client_id) => {
-            let clients = store.get('clients');
+            let clients = store.get("clients");
             clients = clients ? clients : {};
             delete clients[client_id];
-            store.set('clients', clients);
+            store.set("clients", clients);
 
             config.relay();
         },
@@ -47,33 +43,33 @@ module.exports = function(lib) {
             }
             */
 
-            win.webContents.send('config_location', store.path);
+            win.webContents.send("config_location", store.path);
         },
         relay: () => {
-            console.log('Config Punt');
+            console.log("Config Punt");
 
-            let clients = store.get('clients');
+            let clients = store.get("clients");
             for (var client_id in clients) {
                 clients[client_id].has_access_token = false;
-                if (clients[client_id].access_token && clients[client_id].access_token != '') {
+                if (clients[client_id].access_token && clients[client_id].access_token != "") {
                     clients[client_id].has_access_token = true;
                 }
                 delete clients[client_id].access_token;
             }
 
-            win.webContents.send('config_clients', {
+            win.webContents.send("config_clients", {
                 clients,
-                active_client_id: store.get('active.client_id')
+                active_client_id: store.get("active.client_id"),
             });
         },
 
         select: (event, client_id) => {
-            let clients = store.get('clients');
+            let clients = store.get("clients");
             if (clients.hasOwnProperty(client_id)) {
-                store.set('active.client_id', client_id);
-                store.delete('active.conduit_id');
+                store.set("active.client_id", client_id);
+                store.delete("active.conduit_id");
 
-                win.webContents.send('config_selected', clients[client_id]);
+                win.webContents.send("config_selected", clients[client_id]);
 
                 return;
             }
@@ -83,68 +79,65 @@ module.exports = function(lib) {
 
         revoke: async (event, client_id) => {
             let token = store.get(`clients.${client_id}.access_token`);
-            console.log('About to revoke', client_id, token);
+            console.log("About to revoke", client_id, token);
             if (token) {
                 // to revoke a token
                 // first we need to confirm the clientID for this token
                 // in case operator manually put a oAuth token in
                 // and the token != clientID
-                let validate_url = new URL('https://id.twitch.tv/oauth2/validate');
-                let validate_request = await fetch(
-                    validate_url,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/json'
-                        }
-                    }
-                );
+                let validate_url = new URL("https://id.twitch.tv/oauth2/validate");
+                let validate_request = await fetch(validate_url, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
                 if (validate_request.status == 200) {
                     // token OK
                     let validate_response = await validate_request.json();
                     let token_client_id = validate_response.client_id;
 
-                    let revoke_url = new URL('https://id.twitch.tv/oauth2/revoke');
+                    let revoke_url = new URL("https://id.twitch.tv/oauth2/revoke");
                     let revoke_params = [
-                        [ 'client_id', token_client_id ],
-                        [ 'token', token ]
+                        ["client_id", token_client_id],
+                        ["token", token],
                     ];
                     revoke_url.search = new URLSearchParams(revoke_params).toString();
 
-                    let revoke_result = await fetch(
-                        revoke_url,
-                        {
-                            method: 'POST'
-                        }
-                    );
+                    let revoke_result = await fetch(revoke_url, {
+                        method: "POST",
+                    });
                     // do do not care about the response really
 
                     if (revoke_result.status == 200) {
-                        win.webContents.send('errorMsg', 'Token Revoked OK');
+                        win.webContents.send("errorMsg", "Token Revoked OK");
                     } else {
-                        win.webContents.send('errorMsg', `Token Revoke: ${revoke_result.status} - ${await revoke_result.text()}`);
+                        win.webContents.send(
+                            "errorMsg",
+                            `Token Revoke: ${revoke_result.status} - ${await revoke_result.text()}`,
+                        );
                     }
                 } else {
-                    win.webContents.send('errorMsg', 'Token Revoke: Not Valid token');
+                    win.webContents.send("errorMsg", "Token Revoke: Not Valid token");
                 }
             }
             store.delete(`clients.${client_id}.access_token`);
 
             config.relay();
-        }
-    }
+        },
+    };
 
     function errorMsg(msg) {
-        win.webContents.send('errorMsg', msg);
+        win.webContents.send("errorMsg", msg);
     }
 
-    ipcMain.on('config_create', config.create);
-    ipcMain.on('config_loadForEdit', config.loadForEdit);
-    ipcMain.on('config_remove', config.remove);
-    ipcMain.on('config_select', config.select);
-    ipcMain.on('config_revoke', config.revoke);
-    ipcMain.on('ready', config.ready);
+    ipcMain.on("config_create", config.create);
+    ipcMain.on("config_loadForEdit", config.loadForEdit);
+    ipcMain.on("config_remove", config.remove);
+    ipcMain.on("config_select", config.select);
+    ipcMain.on("config_revoke", config.revoke);
+    ipcMain.on("ready", config.ready);
 
     return;
 }

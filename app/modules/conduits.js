@@ -1,72 +1,64 @@
 /**
  * Houses all the functions for JWT API Access
-**/
-module.exports = function(lib) {
-    let { ipcMain, win, store, accessToken } = lib;
-
-    const fetch = require('electron-fetch').default;
-
-    ipcMain.on('twitchAPI', (event, data) => {
-        console.log('in twitchAPI', data);
+ **/
+export default function ({ ipcMain, win, store, accessToken }) {
+    ipcMain.on("twitchAPI", (event, data) => {
+        console.log("in twitchAPI", data);
         let { route, details } = data;
 
         switch (route) {
             // Get Conduits - https://dev.twitch.tv/docs/api/reference/#get-conduits
-            case 'getConduits':
+            case "getConduits":
                 getConduits();
                 return;
             // Create Conduits - https://dev.twitch.tv/docs/api/reference/#create-conduits
-            case 'createConduits':
+            case "createConduits":
                 createConduits(details);
                 return;
             // Update Conduits - https://dev.twitch.tv/docs/api/reference/#update-conduits
-            case 'updateConduits':
+            case "updateConduits":
                 updateConduits(details);
                 return;
             // Delete Conduits - https://dev.twitch.tv/docs/api/reference/#delete-conduit
-            case 'deleteConduits':
+            case "deleteConduits":
                 deleteConduits(details);
                 return;
             // Get Conduit Shards - https://dev.twitch.tv/docs/api/reference/#get-conduit-shards
-            case 'getConduitShards':
+            case "getConduitShards":
                 getConduitShards();
                 return;
             // Update Conduit Shards - https://dev.twitch.tv/docs/api/reference/#update-conduit-shards
-            case 'updateConduitShards':
+            case "updateConduitShards":
                 updateConduitShards(details);
                 return;
 
-            case 'getAndFilterSubscriptions':
+            case "getAndFilterSubscriptions":
                 getAndFilterSubscriptions();
                 return;
-            case 'createSubscription':
+            case "createSubscription":
                 createSubscription(details);
                 return;
-            case 'deleteSubscription':
+            case "deleteSubscription":
                 deleteSubscription(details);
                 return;
-            }
+        }
     });
 
-
     async function callTwitch(route, url, options) {
-        let client_id = store.get('active.client_id');
+        let client_id = store.get("active.client_id");
 
         await accessToken(client_id);
 
         let access_token = store.get(`clients.${client_id}.access_token`);
 
-        let req = await fetch(
-            url,
-            {
-                headers: {
-                    'Client-ID': client_id,
-                    'Authorization': `Bearer ${access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                ...options
-            }
-        );
+        let req = await fetch(url, {
+            headers: {
+                "Client-ID": client_id,
+                "Authorization": `Bearer ${access_token}`,
+                "Content-Type": "application/json",
+            },
+            ...options,
+        });
 
         let resp = {};
         if (req.status == 204) {
@@ -80,19 +72,19 @@ module.exports = function(lib) {
 
         let pl = {
             status: req.status,
-            ratelimitRemain: req.headers.get('ratelimit-remaining'),
-            ratelimitLimit: req.headers.get('ratelimit-limit'),
+            ratelimitRemain: req.headers.get("ratelimit-remaining"),
+            ratelimitLimit: req.headers.get("ratelimit-limit"),
 
-            message: (resp.message ? resp.message : ''),
-            data: (resp.data ? resp.data : [])
-        }
+            message: resp.message ? resp.message : "",
+            data: resp.data ? resp.data : [],
+        };
 
-        if (route == 'internal') {
+        if (route == "internal") {
             // relay rate limit
-            win.webContents.send('twitchAPIRate', {
+            win.webContents.send("twitchAPIRate", {
                 status: req.status,
-                ratelimitRemain: req.headers.get('ratelimit-remaining'),
-                ratelimitLimit: req.headers.get('ratelimit-limit'),
+                ratelimitRemain: req.headers.get("ratelimit-remaining"),
+                ratelimitLimit: req.headers.get("ratelimit-limit"),
             });
             // internal
             pl.resp = resp;
@@ -100,66 +92,48 @@ module.exports = function(lib) {
         }
 
         pl.route = route;
-        win.webContents.send('twitchAPIResult', pl);
+        win.webContents.send("twitchAPIResult", pl);
     }
 
     async function getConduits() {
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
-        callTwitch(
-            'getConduits',
-            url,
-            {
-                method: 'GET'
-            }
-        );
+        callTwitch("getConduits", url, {
+            method: "GET",
+        });
     }
 
     async function createConduits(details) {
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
-        callTwitch(
-            'createConduits',
-            url,
-            {
-                method: 'POST',
-                body: JSON.stringify(details)
-            }
-        );
+        callTwitch("createConduits", url, {
+            method: "POST",
+            body: JSON.stringify(details),
+        });
     }
     async function deleteConduits(details) {
-        console.log('deleteCondtuis', details);
+        console.log("deleteCondtuis", details);
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
-        callTwitch(
-            'deleteConduits',
-            url,
-            {
-                method: 'DELETE',
-                body: JSON.stringify(details)
-            }
-        );
+        callTwitch("deleteConduits", url, {
+            method: "DELETE",
+            body: JSON.stringify(details),
+        });
     }
 
     async function updateConduits(payload) {
-        console.log('updateConduits', payload);
+        console.log("updateConduits", payload);
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits`);
-        await callTwitch(
-            'updateConduits',
-            url,
-            {
-                method: 'PATCH',
-                body: JSON.stringify(payload)
-            }
-        );
+        await callTwitch("updateConduits", url, {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+        });
     }
 
     function getConduitShards(details) {
         details = details ? details : {};
         let { after } = details;
 
-        let params = [
-            [ 'conduit_id', store.get('active.conduit_id') ]
-        ]
-        if (details.hasOwnProperty('after')) {
-            params.push([ 'after', after ]);
+        let params = [["conduit_id", store.get("active.conduit_id")]];
+        if (details.hasOwnProperty("after")) {
+            params.push(["after", after]);
         }
         /*
         status
@@ -171,17 +145,13 @@ module.exports = function(lib) {
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits/shards`);
         url.search = new URLSearchParams(params);
 
-        callTwitch(
-            'getConduitShards',
-            url,
-            {
-                method: 'GET'
-            }
-        );
+        callTwitch("getConduitShards", url, {
+            method: "GET",
+        });
     }
 
     function updateConduitShards(details) {
-        let conduit_id = store.get('active.conduit_id');
+        let conduit_id = store.get("active.conduit_id");
         // extract
         let { shard_id } = details;
         let { transport } = details;
@@ -193,69 +163,58 @@ module.exports = function(lib) {
             shards: [
                 {
                     id: shard_id,
-                    transport: {}
-                }
-            ]
-        }
+                    transport: {},
+                },
+            ],
+        };
         // build payload
-        if (transport == 'webhook') {
+        if (transport == "webhook") {
             payload.shards[0].transport = {
-                method: 'webhook',
+                method: "webhook",
                 callback,
-                secret
-            }
+                secret,
+            };
         } else {
             payload.shards[0].transport = {
-                method: 'websocket',
-                session_id
-            }
+                method: "websocket",
+                session_id,
+            };
         }
         //
 
         let url = new URL(`https://api.twitch.tv/helix/eventsub/conduits/shards`);
-        callTwitch(
-            'updateConduitShards',
-            url,
-            {
-                method: 'PATCH',
-                body: JSON.stringify(payload)
-            }
-        );
+        callTwitch("updateConduitShards", url, {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+        });
     }
 
-
     function getAndFilterSubscriptions() {
-        let conduitID = store.get('active.conduit_id');
+        let conduitID = store.get("active.conduit_id");
         if (!conduitID) {
-            console.error('No Active Conduit');
+            console.error("No Active Conduit");
             return;
         }
 
         let matching = [];
 
         async function loadPage(after) {
-            console.log('Loading', after);
+            console.log("Loading", after);
             let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
             if (after) {
-                url.search = new URLSearchParams([
-                    [ 'after', after ]
-                ]);
+                url.search = new URLSearchParams([["after", after]]);
             }
-            let pl = await callTwitch(
-                'internal',
-                url,
-                {
-                    method: 'GET'
-                }
-            );
+            let pl = await callTwitch("internal", url, {
+                method: "GET",
+            });
 
             let { resp } = pl;
             let { data, pagination } = resp;
 
             //console.log(data);process.exit();
-            for (var x=0;x<data.length;x++) {
+            for (var x = 0; x < data.length; x++) {
                 let { transport } = data[x];
-                if (transport.method == 'conduit') {
+                if (transport.method == "conduit") {
                     if (transport.conduit_id == conduitID) {
                         // valid
                         matching.push(data[x]);
@@ -270,9 +229,9 @@ module.exports = function(lib) {
                 }
             }
             // complete send to front
-            pl.route = 'gotAndFilterSubscriptions';
+            pl.route = "gotAndFilterSubscriptions";
             pl.data = matching;
-            win.webContents.send('twitchAPIResult', pl);
+            win.webContents.send("twitchAPIResult", pl);
         }
 
         loadPage(false);
@@ -280,35 +239,26 @@ module.exports = function(lib) {
 
     async function createSubscription(payload) {
         let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
-        await callTwitch(
-            'createSubscriptionResult',
-            url,
-            {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            }
-        );
+        await callTwitch("createSubscriptionResult", url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
     }
     async function deleteSubscription(details) {
         let url = new URL(`https://api.twitch.tv/helix/eventsub/subscriptions`);
-        callTwitch(
-            'deletedSubscription',
-            url,
-            {
-                method: 'DELETE',
-                body: JSON.stringify(details)
-            }
-        );
+        callTwitch("deletedSubscription", url, {
+            method: "DELETE",
+            body: JSON.stringify(details),
+        });
     }
 
-
-    ipcMain.on('config_conduit_select', async (event, conduit_id) => {
+    ipcMain.on("config_conduit_select", async (event, conduit_id) => {
         // check conduit is ours/acitve/loadable?
-        console.log('setting to', conduit_id);
+        console.log("setting to", conduit_id);
         // set and punt
-        await store.set('active.conduit_id', conduit_id);
-        win.webContents.send('config_conduit_selected', conduit_id);
+        await store.set("active.conduit_id", conduit_id);
+        win.webContents.send("config_conduit_selected", conduit_id);
     });
     // wipe at restart
-    store.delete('active.conduit_id');
+    store.delete("active.conduit_id");
 }

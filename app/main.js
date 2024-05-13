@@ -1,16 +1,13 @@
-const { app, BrowserWindow, ipcMain, shell, session } = require('electron');
-const os = require('os');
+import { BrowserWindow, app, ipcMain, screen, session, shell } from "electron";
 
-const path = require('path');
-
-const Store = require('electron-store');
+import Store from "electron-store";
 const store = new Store();
 
-const contextMenu = require('electron-context-menu');
+import contextMenu from "electron-context-menu";
 contextMenu();
 
-app.on('window-all-closed', () => {
-    app.quit()
+app.on("window-all-closed", () => {
+    app.quit();
 });
 
 /*
@@ -18,12 +15,13 @@ not needed/doesn't work for MAS and not needed for mac.
 Mac self enforces
 and MAS has a fun permissions issue
 */
-if (os.platform() == 'win32') {
+import { platform } from "os";
+if (platform() == "win32") {
     const gotLock = app.requestSingleInstanceLock();
     if (!gotLock) {
         app.quit();
     } else {
-        app.on('second-instance', (event, commandLine, workingDirectory) => {
+        app.on("second-instance", (event, commandLine, workingDirectory) => {
             // Someone tried to run a second instance, we should focus our window.
             if (win) {
                 if (win.isMinimized()) {
@@ -35,14 +33,14 @@ if (os.platform() == 'win32') {
     }
 }
 
-app.on('ready', () => {
+app.on("ready", () => {
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         callback({
             responseHeaders: {
                 ...details.responseHeaders,
-                'Content-Security-Policy': ['script-src \'self\'']
-            }
-        })
+                "Content-Security-Policy": ["script-src 'self'"],
+            },
+        });
     });
 
     // settings migration
@@ -56,25 +54,25 @@ app.on('ready', () => {
 
         title: `BarryCarlyon Twitch Conduit Tools: v${app.getVersion()}`,
         autoHideMenuBar: false,
-        backgroundColor: '#000000',
+        backgroundColor: "#000000",
 
         maximizable: true,
         resizable: true,
         frame: true,
 
         webPreferences: {
-            preload: path.join(app.getAppPath(), 'app', 'preload.js')
-        }
-    }
+            preload: app.getAppPath() + "/app/preload.js",
+        },
+    };
 
-    let position = store.get('window.position');
+    let position = store.get("window.position");
     if (position) {
         delete options.center;
         // validate position
         options.x = position[0];
         options.y = position[1];
     }
-    let size = store.get('window.size');
+    let size = store.get("window.size");
     if (size) {
         options.width = size[0];
         options.height = size[1];
@@ -85,16 +83,13 @@ app.on('ready', () => {
 
     // on a display check
     let on_a_display = false;
-    let displays = require('electron').screen.getAllDisplays();
-    displays.map(function(display) {
+    let displays = screen.getAllDisplays();
+    displays.map(function (display) {
         if (
-            win.getPosition()[0] >= display.bounds.x
-            &&
-            win.getPosition()[1] >= display.bounds.y
-            &&
-            win.getPosition()[0] < (display.bounds.x + display.bounds.width)
-            &&
-            win.getPosition()[1] < (display.bounds.y + display.bounds.height)
+            win.getPosition()[0] >= display.bounds.x &&
+            win.getPosition()[1] >= display.bounds.y &&
+            win.getPosition()[0] < display.bounds.x + display.bounds.width &&
+            win.getPosition()[1] < display.bounds.y + display.bounds.height
         ) {
             on_a_display = true;
         }
@@ -102,17 +97,17 @@ app.on('ready', () => {
     if (!on_a_display) {
         // reset to center
         win.center();
-        store.delete('window.position');
+        store.delete("window.position");
     }
-    win.on('moved', (e) => {
-        store.set('window.position', win.getPosition());
+    win.on("moved", (e) => {
+        store.set("window.position", win.getPosition());
     });
-    win.on('resized', (e) => {
-        store.set('window.size', win.getSize());
+    win.on("resized", (e) => {
+        store.set("window.size", win.getSize());
     });
 
-    win.loadFile(path.join(app.getAppPath(), 'app', 'views', 'interface.html'));
-    win.once('ready-to-show', () => {
+    win.loadFile("app/views/interface.html");
+    win.once("ready-to-show", () => {
         win.show();
         win.setTitle(`BarryCarlyon Twitch Conduit Tools: v${app.getVersion()}`);
     });
@@ -122,23 +117,33 @@ app.on('ready', () => {
         }, 1500);
     }
 
-    ipcMain.on('openWeb', (e,url) => {
+    ipcMain.on("openWeb", (e, url) => {
         shell.openExternal(url);
     });
-    ipcMain.on('minimize', () => {
+    ipcMain.on("minimize", () => {
         win.minimize();
     });
-    ipcMain.on('quit', () => {
+    ipcMain.on("quit", () => {
         app.quit();
     });
 
-    // add updater
-    require(path.join(app.getAppPath(), 'app', 'modules', 'updater.js'))({ app, ipcMain, win, store });
-    // handler
-    require(path.join(app.getAppPath(), 'app', 'modules', 'config.js'))({ app, ipcMain, win, store });
-    let accessToken = require(path.join(app.getAppPath(), 'app', 'modules', 'twitch.js'))({ app, ipcMain, win, store });
-    console.log(accessToken);
-    require(path.join(app.getAppPath(), 'app', 'modules', 'conduits.js'))({ app, ipcMain, win, store, accessToken });
+    modules({ app, ipcMain, win, store });
 });
+
+import moduleConduits from "./modules/conduits.js";
+import moduleConfig from "./modules/config.js";
+import moduleAccessToken from "./modules/twitch.js";
+import moduleUpdater from "./modules/updater.js";
+
+function modules({ app, ipcMain, win, store }) {
+    // add updater
+    moduleUpdater({ app, ipcMain, win, store });
+    // handler
+    moduleConfig({ app, ipcMain, win, store });
+    // twitch
+    let accessToken = moduleAccessToken({ app, ipcMain, win, store });
+    // conduits
+    moduleConduits({ app, ipcMain, win, store, accessToken });
+}
 
 let win;

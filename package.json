@@ -1,128 +1,134 @@
 {
-  "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder --win --x64",
-    "mdist": "electron-builder --mac",
-    "css": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css",
-    "start": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css && set NODE_ENV=development && electron .",
-    "test": "set NODE_ENV=development && set DEBUG=* && electron .",
-    "publish": "electron-builder -p always"
-  },
-  "build": {
-    "appId": "com.barrycarlyon.twitch-extension-tools",
-    "productName": "BarryCarlyon Conduit Tools",
-    "copyright": "Copyright © 2024 ${author}",
-    "icon": "app/assets/eLgNUAVE.ico",
-    "win": {
-      "target": "nsis",
-      "publish": [
-        {
-          "provider": "github",
-          "owner": "barrycarlyon",
-          "repo": "twitch_conduit_tools"
-        }
-      ]
+    "scripts": {
+        "postinstall": "electron-builder install-app-deps",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder --win --x64",
+        "mdist": "electron-builder --mac",
+        "css": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css",
+        "start": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css && set NODE_ENV=development && electron .",
+        "test": "set NODE_ENV=development && set DEBUG=* && electron .",
+        "publish": "electron-builder -p always"
     },
-    "nsis": {
-      "installerIcon": "app/assets/eLgNUAVE.ico",
-      "uninstallerIcon": "app/assets/eLgNUAVE.ico",
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "menuCategory": true
-    },
-    "mac": {
-      "appId": "com.barrycarlyon.twitch-conduit-tools",
-      "target": [
-        {
-          "target": "mas",
-          "arch": "universal"
+    "build": {
+        "appId": "com.barrycarlyon.twitch-conduit-tools",
+        "productName": "BarryCarlyon Conduit Tools",
+        "copyright": "Copyright © 2024 ${author}",
+        "icon": "app/assets/eLgNUAVE.ico",
+        "win": {
+            "target": "nsis",
+            "publish": [
+                {
+                    "provider": "github",
+                    "owner": "barrycarlyon",
+                    "repo": "twitch_conduit_tools"
+                }
+            ]
         },
-        {
-          "target": "dmg",
-          "arch": "universal"
+        "nsis": {
+            "installerIcon": "app/assets/eLgNUAVE.ico",
+            "uninstallerIcon": "app/assets/eLgNUAVE.ico",
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "menuCategory": true
         },
-        {
-          "target": "zip",
-          "arch": "universal"
-        }
-      ],
-      "category": "public.app-category.developer-tools",
-      "icon": "assets/eLgNUAVE.icns",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "type": "distribution",
-      "extendInfo": {
-        "CFBundleVersion": "1.4.1001",
-        "NSBluetoothAlwaysUsageDescription": false,
-        "NSBluetoothPeripheralUsageDescription": false,
-        "NSCameraUsageDescription": false,
-        "NSMicrophoneUsageDescription": false,
-        "CFBundleSupportedPlatforms": [
-          "MacOSX"
+        "mac": {
+            "appId": "com.barrycarlyon.twitch-conduit-tools",
+            "target": [
+                {
+                    "target": "mas",
+                    "arch": "universal"
+                },
+                {
+                    "target": "dmg",
+                    "arch": "universal"
+                },
+                {
+                    "target": "zip",
+                    "arch": "universal"
+                }
+            ],
+            "category": "public.app-category.developer-tools",
+            "icon": "assets/eLgNUAVE.icns",
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "type": "distribution",
+            "extendInfo": {
+                "CFBundleVersion": "1.4.1001",
+                "NSBluetoothAlwaysUsageDescription": false,
+                "NSBluetoothPeripheralUsageDescription": false,
+                "NSCameraUsageDescription": false,
+                "NSMicrophoneUsageDescription": false,
+                "CFBundleSupportedPlatforms": [
+                    "MacOSX"
+                ]
+            },
+            "mergeASARs": true,
+            "notarize": {
+                "teamId": "33X3RUCND8"
+            }
+        },
+        "dmg": {
+            "backgroundColor": "#382f2b",
+            "internetEnabled": true,
+            "sign": true
+        },
+        "mas": {
+            "hardenedRuntime": false,
+            "entitlements": "build/entitlements.plist",
+            "entitlementsInherit": "build/entitlements.inherit.plist",
+            "entitlementsLoginHelper": "build/entitlements.loginhelper.plist",
+            "provisioningProfile": "build/TaraConduitTools.provisionprofile"
+        },
+        "files": [
+            "!.github",
+            "!.vscode",
+            "!prettier.config.cjs",
+            "!dist",
+            "!dist_test",
+            "!docs",
+            "!screenshots",
+            "!assets",
+            "!app/views/assets/boostrap.css",
+            "!app/views/assets/boostrap.addition.css"
         ]
-      },
-      "mergeASARs": true
     },
-    "afterSign": "electron-builder-notarize",
-    "dmg": {
-      "backgroundColor": "#382f2b",
-      "internetEnabled": true,
-      "sign": true
+    "dependencies": {
+        "electron-context-menu": "^4.0.0",
+        "electron-store": "^9.0.0",
+        "electron-updater": "^6.1.8"
     },
-    "mas": {
-      "hardenedRuntime": false,
-      "entitlements": "build/entitlements.plist",
-      "entitlementsInherit": "build/entitlements.inherit.plist",
-      "entitlementsLoginHelper": "build/entitlements.loginhelper.plist",
-      "provisioningProfile": "build/RobynExtToolStore.provisionprofile"
+    "name": "barrycarlyontwitchconduittools",
+    "productName": "BarryCarlyonTwitchConduitTools",
+    "description": "BarryCarlyon Twitch Conduit Tools, helps you interact/test with Twitch Conduits",
+    "author": "Barry Carlyon",
+    "version": "1.4.0",
+    "main": "app/main.js",
+    "keywords": [
+        "desktop-app",
+        "twitch",
+        "tools",
+        "twitch-api"
+    ],
+    "license": "WTFPL",
+    "homepage": "https://github.com/BarryCarlyon/twitch_conduit_tools#readme",
+    "bugs": {
+        "url": "https://github.com/BarryCarlyon/twitch_conduit_tools/issues"
     },
-    "files": [
-      "!.github",
-      "!dist",
-      "!dist_test",
-      "!docs",
-      "!screenshots",
-      "!assets",
-      "!app/views/assets/boostrap.css",
-      "!app/views/assets/boostrap.addition.css"
-    ]
-  },
-  "dependencies": {
-    "electron-context-menu": "^3.6.1",
-    "electron-fetch": "^1.9.1",
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.1.8"
-  },
-  "name": "barrycarlyontwitchconduittools",
-  "productName": "BarryCarlyonTwitchConduitTools",
-  "description": "BarryCarlyon Twitch Conduit Tools, helps you interact/test with Twitch Conduits",
-  "author": "Barry Carlyon",
-  "version": "1.4.0",
-  "main": "app/main.js",
-  "keywords": [
-    "desktop-app",
-    "twitch",
-    "tools",
-    "twitch-api"
-  ],
-  "license": "WTFPL",
-  "homepage": "https://github.com/BarryCarlyon/twitch_conduit_tools#readme",
-  "bugs": {
-    "url": "https://github.com/BarryCarlyon/twitch_conduit_tools/issues"
-  },
-  "engines": {
-    "npm": ">=6",
-    "node": ">=12"
-  },
-  "optionalDependencies": {
-    "@electron/osx-sign": "^1.2.0",
-    "dmg-license": "^1.0.11",
-    "electron-builder-notarize": "^1.5.2"
-  },
-  "devDependencies": {
-    "electron": "^30.0.1",
-    "electron-builder": "^24.13.3",
-    "uglifycss": "^0.0.29"
-  }
+    "engines": {
+        "npm": ">=6",
+        "node": ">=12"
+    },
+    "optionalDependencies": {
+        "@electron/osx-sign": "^1.2.0",
+        "dmg-license": "^1.0.11",
+        "electron-builder-notarize": "^1.5.2"
+    },
+    "devDependencies": {
+        "electron": "^30.0.3",
+        "electron-builder": "^24.13.3",
+        "prettier": "^3.2.5",
+        "prettier-plugin-organize-imports": "^3.2.4",
+        "uglifycss": "^0.0.29"
+    },
+    "type": "module"
 }

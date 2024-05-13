@@ -7,7 +7,7 @@
         "css": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css",
         "start": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css && set NODE_ENV=development && electron .",
         "test": "set NODE_ENV=development && set DEBUG=* && electron .",
-        "publish": "electron-builder -p always"
+        "publish": "electron-builder -p always --win --x64 --mac"
     },
     "build": {
         "appId": "com.barrycarlyon.twitch-conduit-tools",
@@ -101,7 +101,7 @@
     "productName": "BarryCarlyonTwitchConduitTools",
     "description": "BarryCarlyon Twitch Conduit Tools, helps you interact/test with Twitch Conduits",
     "author": "Barry Carlyon",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "main": "app/main.js",
     "keywords": [
         "desktop-app",

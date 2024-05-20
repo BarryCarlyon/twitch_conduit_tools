@@ -119,7 +119,7 @@
         "node": ">=12"
     },
     "optionalDependencies": {
-        "@electron/osx-sign": "^1.2.0",
+        "@electron/osx-sign": "^1.3.0",
         "dmg-license": "^1.0.11",
         "electron-builder-notarize": "^1.5.2"
     },

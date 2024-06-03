@@ -124,7 +124,7 @@
         "electron-builder-notarize": "^1.5.2"
     },
     "devDependencies": {
-        "electron": "^30.0.3",
+        "electron": "^30.0.9",
         "electron-builder": "^24.13.3",
         "prettier": "^3.2.5",
         "prettier-plugin-organize-imports": "^3.2.4",

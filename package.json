@@ -7,7 +7,8 @@
         "css": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css",
         "start": "uglifycss app/views/assets/bootstrap.css app/views/assets/bootstrap.addition.css > app/views/assets/bootstrap.min.css && set NODE_ENV=development && electron .",
         "test": "set NODE_ENV=development && set DEBUG=* && electron .",
-        "publish": "electron-builder -p always --win"
+        "publish": "electron-builder -p always --win --x64",
+        "mpublish": "electron-builder -p always --mac"
     },
     "build": {
         "appId": "com.barrycarlyon.twitch-conduit-tools",
@@ -93,7 +94,7 @@
         ]
     },
     "dependencies": {
-        "electron-context-menu": "^4.0.0",
+        "electron-context-menu": "^4.0.1",
         "electron-store": "^10.0.0",
         "electron-updater": "^6.2.1"
     },
@@ -124,10 +125,10 @@
         "electron-builder-notarize": "^1.5.2"
     },
     "devDependencies": {
-        "electron": "^31.0.2",
+        "electron": "^31.1.0",
         "electron-builder": "^24.13.3",
         "prettier": "^3.3.2",
-        "prettier-plugin-organize-imports": "^3.2.4",
+        "prettier-plugin-organize-imports": "^4.0.0",
         "uglifycss": "^0.0.29"
     },
     "type": "module"

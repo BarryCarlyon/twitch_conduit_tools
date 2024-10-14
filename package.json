@@ -92,7 +92,7 @@
     "dependencies": {
         "electron-context-menu": "^4.0.4",
         "electron-store": "^10.0.0",
-        "electron-updater": "^6.3.4"
+        "electron-updater": "^6.3.9"
     },
     "name": "barrycarlyontwitchconduittools",
     "productName": "BarryCarlyonTwitchConduitTools",
@@ -121,8 +121,8 @@
         "electron-builder-notarize": "^1.5.2"
     },
     "devDependencies": {
-        "electron": "^32.1.2",
-        "electron-builder": "^25.0.5",
+        "electron": "^32.2.0",
+        "electron-builder": "^25.1.8",
         "prettier": "^3.3.3",
         "prettier-plugin-organize-imports": "^4.1.0",
         "uglifycss": "^0.0.29"

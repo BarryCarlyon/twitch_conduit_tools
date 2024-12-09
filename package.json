@@ -123,7 +123,7 @@
     "devDependencies": {
         "electron": "^32.2.0",
         "electron-builder": "^25.1.8",
-        "prettier": "^3.3.3",
+        "prettier": "^3.4.2",
         "prettier-plugin-organize-imports": "^4.1.0",
         "uglifycss": "^0.0.29"
     },

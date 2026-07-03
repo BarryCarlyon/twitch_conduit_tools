@@ -116,8 +116,7 @@
     },
     "optionalDependencies": {
         "@electron/osx-sign": "^2.5.0",
-        "dmg-license": "^1.0.11",
-        "electron-builder-notarize": "^1.5.2"
+        "dmg-license": "^1.0.11"
     },
     "devDependencies": {
         "electron": "^43.0.0",

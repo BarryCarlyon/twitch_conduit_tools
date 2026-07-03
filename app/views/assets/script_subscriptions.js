@@ -17,13 +17,17 @@ function drawEventSubcriptions(resp) {
         r.setAttribute("id", id);
 
         var d = r.insertCell();
-        d.textContent = type;
-        var d = r.insertCell();
-        d.textContent = version;
+        var div = document.createElement("div");
+        div.textContent = `Type: ${type}`;
+        d.append(div);
+        var div = document.createElement("div");
+        div.textContent = `Version: ${version}`;
+        d.append(div);
+
         var d = r.insertCell();
         //d.textContent = JSON.stringify(condition);
         let subTable = document.createElement("table");
-        subTable.classList = "table table-striped table-hover";
+        subTable.classList = "table table-striped table-hover mb-0";
         d.append(subTable);
         for (var k in condition) {
             let sr = subTable.insertRow();
@@ -75,19 +79,26 @@ function deletedSubscription(pl) {
     let { ratelimitRemain, ratelimitLimit } = pl;
 
     if (status == 204) {
-        // toast
-        toastSuccess(`Deleted: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
+        toaster.success(`Deleted: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
         let el = document.getElementById(deletedSubscriptionId);
         console.log(el);
         if (el) {
             el.remove();
         }
     } else {
-        toastWarning(`Failed: ${status} - ${message}`);
+        toaster.error(`Failed: ${status} - ${message}`);
     }
 }
 
 func_create_subscription.addEventListener("click", (e) => {
+    if (
+        !getConduitSubscriptionsDisplayHeader.textContent ||
+        getConduitSubscriptionsDisplayHeader.textContent == ""
+    ) {
+        toaster.error("No Conduit Selected");
+        return;
+    }
+
     let modal = bootstrap.Modal.getOrCreateInstance("#CreateSubscription_modal");
     modal.show();
 
@@ -116,12 +127,20 @@ create_subscription_condition_add.addEventListener("click", (e) => {
 
     items[0].focus();
 });
+create_subscription_form.addEventListener("click", (e) => {
+    if (!e.target.hasAttribute("data-has-action")) {
+        return;
+    }
+    e.preventDefault();
+    e.target.closest(".input-group").remove();
+});
 create_subscription_form.addEventListener("reset", (e) => {
     let cond = create_subscription_conduit_id.value;
     setTimeout(() => {
         create_subscription_conduit_id.value = cond;
     }, 100);
 });
+
 create_subscription_form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -165,11 +184,11 @@ function createSubscriptionResult(pl) {
 
     if (status == 202) {
         // toast
-        toastSuccess(`Created: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
+        toaster.success(`Created: ${status} Ratelimit: ${ratelimitRemain}/${ratelimitLimit}`);
         // dismissmodal
         let modal = bootstrap.Modal.getOrCreateInstance("#CreateSubscription_modal");
         modal.hide();
     } else {
-        toastWarning(`Failed: ${status} - ${message}`);
+        toaster.error(`Failed: ${status} - ${message}`);
     }
 }

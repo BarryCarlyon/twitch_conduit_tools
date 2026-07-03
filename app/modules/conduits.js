@@ -193,6 +193,7 @@ export default function ({ ipcMain, win, store, accessToken }) {
         let conduitID = store.get("active.conduit_id");
         if (!conduitID) {
             console.error("No Active Conduit");
+            win.webContents.send("errorMsg", "No Active Conduit");
             return;
         }
 

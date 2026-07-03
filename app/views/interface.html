@@ -133,27 +133,29 @@
                                 <p>Fetch <a href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</a> for this Conduit</p>
 
                                 <div id="getConduitSubscriptionsDisplayHeader" class="monospace"></div>
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Version</th>
-                                            <th>Condition</th>
-                                            <th>State</th>
-                                            <th>-</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="getConduitSubscriptionsDisplay"></tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <tr><td colspan="5">
-                                                <div class="btn-group p-1 float-end">
-                                                <input type="button" class="btn btn-outline-info float-end" id="func_create_subscription" value="Create Subscription" />
-                                                <input type="button" class="btn btn-outline-info" id="func_load_subscription" value="Refresh Subscriptions" />
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                <div class="overflow-x-scroll">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>V</th>
+                                                <th>Condition</th>
+                                                <th>State</th>
+                                                <th>-</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="getConduitSubscriptionsDisplay"></tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <tr><td colspan="5">
+                                                    <div class="btn-group p-1 float-end">
+                                                    <input type="button" class="btn btn-outline-info float-end" id="func_create_subscription" value="Create Subscription" />
+                                                    <input type="button" class="btn btn-outline-info" id="func_load_subscription" value="Refresh Subscriptions" />
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

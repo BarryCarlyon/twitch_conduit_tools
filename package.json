@@ -67,22 +67,13 @@
                     "MacOSX"
                 ]
             },
-            "notarize": {
-                "teamId": "33X3RUCND8"
-            },
+            "notarize": true,
             "mergeASARs": true
         },
         "dmg": {
             "backgroundColor": "#382f2b",
             "internetEnabled": true,
             "sign": true
-        },
-        "mas": {
-            "hardenedRuntime": false,
-            "entitlements": "build/entitlements.plist",
-            "entitlementsInherit": "build/entitlements.inherit.plist",
-            "entitlementsLoginHelper": "build/entitlements.loginhelper.plist",
-            "provisioningProfile": "build/TaraConduitTools.provisionprofile"
         },
         "files": [
             "!.github",

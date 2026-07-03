@@ -13,7 +13,7 @@
     "build": {
         "appId": "com.barrycarlyon.twitch-conduit-tools",
         "productName": "BarryCarlyon Conduit Tools",
-        "copyright": "Copyright © 2024 ${author}",
+        "copyright": "Copyright © 2026 ${author}",
         "icon": "app/assets/eLgNUAVE.ico",
         "win": {
             "target": "nsis",
@@ -23,7 +23,15 @@
                     "owner": "barrycarlyon",
                     "repo": "twitch_conduit_tools"
                 }
-            ]
+            ],
+            "signtoolOptions": {
+                "publisherName": "Barry Carlyon",
+                "certificateSubjectName": "Barry Carlyon",
+                "signingHashAlgorithms": [
+                    "sha256"
+                ],
+                "sign": "./customSign.cjs"
+            }
         },
         "nsis": {
             "installerIcon": "app/assets/eLgNUAVE.ico",
@@ -98,7 +106,7 @@
     "productName": "BarryCarlyonTwitchConduitTools",
     "description": "BarryCarlyon Twitch Conduit Tools, helps you interact/test with Twitch Conduits",
     "author": "Barry Carlyon",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "main": "app/main.js",
     "keywords": [
         "desktop-app",
@@ -127,5 +135,8 @@
         "prettier-plugin-organize-imports": "^4.3.0",
         "uglifycss": "^0.0.29"
     },
-    "type": "module"
+    "type": "module",
+    "allowScripts": {
+        "electron-winstaller@5.4.0": true
+    }
 }
